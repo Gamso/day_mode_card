@@ -59,7 +59,7 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
           `}
 
           <!-- Segments for each mode - only show the active one colored -->
-          ${$t.map((t,e)=>{const[s,i]=this._strokeDashArc(e,e+1);return t===this.currentValue?W`
+          ${$t.filter(t=>t===this.currentValue).map((t,e,s)=>{const i=$t.indexOf(t),[o,r]=this._strokeDashArc(i,i+1);return W`
               <path
                 class="gauge-segment active"
                 d="${gt}"
@@ -67,12 +67,12 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
                 stroke="var(--primary-color, #3b82f6)"
                 stroke-width="${25}"
                 stroke-linecap="butt"
-                stroke-dasharray="${s}"
-                stroke-dashoffset="${i}"
+                stroke-dasharray="${o}"
+                stroke-dashoffset="${r}"
                 opacity="1"
                 style="cursor: pointer; transition: opacity 0.2s, stroke 0.2s;"
               />
-            `:W``})}
+            `})}
 
           <!-- Clickable areas for each zone (invisible overlay) -->
           ${$t.map((t,e)=>{const[s,i]=this._strokeDashArc(e,e+1);return W`

@@ -9,6 +9,7 @@ const ARC_RADIUS = 85;
 const ARC_PATH = "M 30 150 A 85 85 0 1 1 170 150"; // 180° arc, opening at bottom
 const ARC_LENGTH = 85 * 2 * Math.PI * (180 / 360); // Circumference for 180°
 const STROKE_WIDTH = 25; // Increased stroke width for better visibility
+const CLICK_AREA_PADDING = 10; // Additional padding for clickable area
 
 // Circle center for this arc (calculated from arc geometry)
 const CIRCLE_CENTER_X = 100;
@@ -153,12 +154,11 @@ export class DayModeCircularSlider extends LitElement {
           `}
 
           <!-- Segments for each mode - only show the active one colored -->
-          ${THERMOSTAT_MODES.map((mode, i) => {
+          ${THERMOSTAT_MODES.filter(
+            (mode) => mode === this.currentValue,
+          ).map((mode, _, arr) => {
+            const i = THERMOSTAT_MODES.indexOf(mode);
             const [dasharray, dashoffset] = this._strokeDashArc(i, i + 1);
-            const isActive = mode === this.currentValue;
-
-            // Only render colored segment if active
-            if (!isActive) return svg``;
 
             return svg`
               <path
@@ -185,7 +185,7 @@ export class DayModeCircularSlider extends LitElement {
                 d="${ARC_PATH}"
                 fill="none"
                 stroke="transparent"
-                stroke-width="${STROKE_WIDTH + 10}"
+                stroke-width="${STROKE_WIDTH + CLICK_AREA_PADDING}"
                 stroke-linecap="butt"
                 stroke-dasharray="${dasharray}"
                 stroke-dashoffset="${dashoffset}"
