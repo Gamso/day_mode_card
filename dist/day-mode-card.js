@@ -31,12 +31,12 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const ft={en:{card:{title:"Modes",mode_jour:"Day mode",mode_thermostat:"Thermostat mode",entity_not_found:"Entity not found: {entity}",off:"Off"}},fr:{card:{title:"Modes",mode_jour:"Mode jour",mode_thermostat:"Mode thermostat",entity_not_found:"Entité introuvable: {entity}",off:"Éteint"}}};function _t(t,e,s){const i=function(t){const e=t?.locale?.language||t?.language||"en",s=String(e).split("-")[0];return ft[e]?e:ft[s]?s:"en"}(t);let o=(r=ft[i]||ft.en,e.split(".").reduce((t,e)=>t&&null!=t[e]?t[e]:void 0,r));var r;return o?(s&&Object.entries(s).forEach(([t,e])=>o=o.replace(`{${t}}`,e)),o):e}const $t=["Chauffage","Climatisation","Ventilation"],mt=85,gt="M 30 150 A 85 85 0 1 1 170 150",yt=170*Math.PI*.5;class vt extends ct{_valueToPercentage(t){return $t.length<=1?0:t/$t.length}_strokeDashArc(t,e){const s=this._valueToPercentage(t),i=this._valueToPercentage(e),o=Math.max((i-s)*yt,0);return[`${o} ${yt-o}`,`-${s*yt}`]}_getPercentageFromEvent(t){if(!this._svg)return 0;let e=0,s=0;t instanceof MouseEvent?(e=t.clientX,s=t.clientY):t instanceof TouchEvent&&t.touches.length>0&&(e=t.touches[0].clientX,s=t.touches[0].clientY);const i=this._svg.getBoundingClientRect(),o=2*(e-i.left-i.width/2)/i.width,r=2*(s-i.top-i.height/2)/i.height,n=Math.atan2(r,o);let a=n/(2*Math.PI)*360;if(a>=-146&&a<=34){const t=(34-a)/180;return Math.max(0,Math.min(1,t))}if(a>=214&&a<=360){const t=(360-a+34)/180;return Math.max(0,Math.min(1,t))}return-1}_onSelect(t){const e=$t[t];e&&this.dispatchEvent(new CustomEvent("option-selected",{detail:{index:t,option:e},bubbles:!0,composed:!0}))}_onSvgClick(t){const e=this._getPercentageFromEvent(t);if(e<0)return;const s=Math.round(e*($t.length-1));this._onSelect(Math.max(0,Math.min(s,$t.length-1)))}render(){return q`
+ */const ft={en:{card:{title:"Modes",mode_jour:"Day mode",mode_thermostat:"Thermostat mode",entity_not_found:"Entity not found: {entity}",off:"Off"}},fr:{card:{title:"Modes",mode_jour:"Mode jour",mode_thermostat:"Mode thermostat",entity_not_found:"Entité introuvable: {entity}",off:"Éteint"}}};function _t(t,e,s){const i=function(t){const e=t?.locale?.language||t?.language||"en",s=String(e).split("-")[0];return ft[e]?e:ft[s]?s:"en"}(t);let o=(r=ft[i]||ft.en,e.split(".").reduce((t,e)=>t&&null!=t[e]?t[e]:void 0,r));var r;return o?(s&&Object.entries(s).forEach(([t,e])=>o=o.replace(`{${t}}`,e)),o):e}const $t=["Chauffage","Climatisation","Ventilation"],mt=85,gt="M 30 150 A 85 85 0 1 1 170 150",yt=170*Math.PI*.5,vt=34.2,At=180,bt=-145.8;class Et extends ct{_valueToPercentage(t){return $t.length<=1?0:t/$t.length}_strokeDashArc(t,e){const s=this._valueToPercentage(t),i=this._valueToPercentage(e),o=Math.max((i-s)*yt,0);return[`${o} ${yt-o}`,`-${s*yt}`]}_getPercentageFromEvent(t){if(!this._svg)return 0;let e=0,s=0;t instanceof MouseEvent?(e=t.clientX,s=t.clientY):t instanceof TouchEvent&&t.touches.length>0&&(e=t.touches[0].clientX,s=t.touches[0].clientY);const i=this._svg.getBoundingClientRect(),o=2*(e-i.left-i.width/2)/i.width,r=2*(s-i.top-i.height/2)/i.height,n=Math.atan2(r,o);let a=n/(2*Math.PI)*360;if(a>=bt&&a<=vt){const t=(vt-a)/At;return Math.max(0,Math.min(1,t))}if(a>214.2||a<0){const t=a<0?a+360:a;if(t>=214.2){const e=(vt+(360-t))/At;return Math.max(0,Math.min(1,e))}}return-1}_onSelect(t){const e=$t[t];e&&this.dispatchEvent(new CustomEvent("option-selected",{detail:{index:t,option:e},bubbles:!0,composed:!0}))}_onSvgClick(t){const e=this._getPercentageFromEvent(t);if(e<0)return;const s=Math.round(e*($t.length-1));this._onSelect(Math.max(0,Math.min(s,$t.length-1)))}render(){return q`
       <div class="slider-container">
         <svg viewBox="0 0 200 200" @click=${this._onSvgClick}>
           <!-- Define text paths for each zone -->
           <defs>
-            ${$t.map((t,e)=>{const s=this._valueToPercentage(e),i=this._valueToPercentage(e+1),o=(34.2-180*s)*(Math.PI/180),r=(34.2-180*i)*(Math.PI/180),n=100+mt*Math.cos(o),a=102+mt*Math.sin(o),h=100+mt*Math.cos(r),c=102+mt*Math.sin(r);return W`
+            ${$t.map((t,e)=>{const s=this._valueToPercentage(e),i=this._valueToPercentage(e+1),o=(vt-s*At)*(Math.PI/180),r=(vt-i*At)*(Math.PI/180),n=100+mt*Math.cos(o),a=102+mt*Math.sin(o),h=100+mt*Math.cos(r),c=102+mt*Math.sin(r);return W`
                 <path
                   id="textPath-${e}"
                   d="${`M ${n} ${a} A 85 85 0 0 0 ${h} ${c}`}"
@@ -109,7 +109,7 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
             `)}
         </svg>
       </div>
-    `}}vt.styles=n`
+    `}}Et.styles=n`
     :host {
       display: block;
     }
@@ -130,13 +130,13 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
       cursor: pointer;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-  `,t([ut({attribute:!1})],vt.prototype,"hass",void 0),t([ut({type:String})],vt.prototype,"entityId",void 0),t([ut({type:String})],vt.prototype,"currentValue",void 0),t([
+  `,t([ut({attribute:!1})],Et.prototype,"hass",void 0),t([ut({type:String})],Et.prototype,"entityId",void 0),t([ut({type:String})],Et.prototype,"currentValue",void 0),t([
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.decorate&&"object"!=typeof e&&Object.defineProperty(t,e,s),s))(e,s,{get(){return(e=>e.renderRoot?.querySelector(t)??null)(this)}})}("svg")],vt.prototype,"_svg",void 0),customElements.define("day-mode-circular-slider",vt);class At extends ct{static getStubConfig(){return{name:"Modes",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat"}}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Modes",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat"}}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const s=e.target,i=s?.value;i&&this.hass.callService("input_select","select_option",{entity_id:t,option:i})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}render(){if(!this.hass||!this._config)return J;const t=this.getEntityState(this._config.mode_jour_entity),e=this.getEntityState(this._config.mode_thermostat_entity),s=t?.attributes?.options??[],i=this._config.name??_t(this.hass,"card.title");return q`
+function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.decorate&&"object"!=typeof e&&Object.defineProperty(t,e,s),s))(e,s,{get(){return(e=>e.renderRoot?.querySelector(t)??null)(this)}})}("svg")],Et.prototype,"_svg",void 0),customElements.define("day-mode-circular-slider",Et);class St extends ct{static getStubConfig(){return{name:"Modes",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat"}}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Modes",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat"}}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const s=e.target,i=s?.value;i&&this.hass.callService("input_select","select_option",{entity_id:t,option:i})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}render(){if(!this.hass||!this._config)return J;const t=this.getEntityState(this._config.mode_jour_entity),e=this.getEntityState(this._config.mode_thermostat_entity),s=t?.attributes?.options??[],i=this._config.name??_t(this.hass,"card.title");return q`
       <ha-card header="${i}">
         <div class="grid">
           <div class="item">
@@ -181,7 +181,7 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
           </div>
         </div>
       </ha-card>
-    `}}At.styles=n`
+    `}}St.styles=n`
     ha-card {
       padding: 12px;
     }
@@ -253,10 +253,10 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
       color: var(--text-primary-color, white);
       border-color: var(--primary-color, #3b82f6);
     }
-  `,t([ut({attribute:!1})],At.prototype,"hass",void 0),t([function(t){return ut({...t,state:!0,attribute:!1})}
+  `,t([ut({attribute:!1})],St.prototype,"hass",void 0),t([function(t){return ut({...t,state:!0,attribute:!1})}
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */()],At.prototype,"_config",void 0),customElements.get("day-mode-card")||customElements.define("day-mode-card",At),window.customCards=window.customCards||[],window.customCards.push({type:"day-mode-card",name:"Day Mode Card",description:"Regroupe deux input_select (jour & thermostat)."});
+ */()],St.prototype,"_config",void 0),customElements.get("day-mode-card")||customElements.define("day-mode-card",St),window.customCards=window.customCards||[],window.customCards.push({type:"day-mode-card",name:"Day Mode Card",description:"Regroupe deux input_select (jour & thermostat)."});
 //# sourceMappingURL=day-mode-card.js.map

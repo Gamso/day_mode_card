@@ -15,10 +15,12 @@ const CLICK_AREA_PADDING = 10; // Additional padding for clickable area
 const CIRCLE_CENTER_X = 100;
 const CIRCLE_CENTER_Y = 102; // Approximately (actual: 101.78)
 
-// Angle range for the arc (sweeping counter-clockwise from bottom-right to bottom-left)
-const START_ANGLE = 34.2; // Right point (170, 150)
-const END_ANGLE = 144.2; // Left point (30, 150)
+// Angle range for the arc (going backwards from right through top to left)
+const START_ANGLE = 34.2; // Right point (170, 150) - Start of arc at 0%
+const END_ANGLE = 144.2; // Left point (30, 150) - Original endpoint (not used for calculations)
 const TOTAL_ARC_DEGREES = 180; // 180° arc passing through top
+const ARC_END_ANGLE = START_ANGLE - TOTAL_ARC_DEGREES; // -145.8° (end of arc at 100%)
+const ARC_END_ANGLE_POSITIVE = ARC_END_ANGLE + 360; // 214.2° (positive equivalent)
 
 export class DayModeCircularSlider extends LitElement {
   @property({ attribute: false }) public hass: any;
@@ -69,24 +71,26 @@ export class DayModeCircularSlider extends LitElement {
     const rad2deg = (rad: number) => (rad / (2 * Math.PI)) * 360;
     let angle = rad2deg(phi);
 
-    // The arc goes from 34° (right) backwards through -90° (top) to -146°/214° (left)
-    // Valid arc range: 34° to -146° (going backwards/counterclockwise)
-    // Which wraps to: 34° to 0° to -90° to -146° (or 214° in positive angles)
+    // The arc goes from START_ANGLE (right) backwards through -90° (top) to ARC_END_ANGLE (left)
+    // Valid arc range: START_ANGLE to ARC_END_ANGLE (going backwards/counterclockwise)
+    // In positive angles: START_ANGLE and (ARC_END_ANGLE_POSITIVE to 360)
     
     // Check if click is in the valid arc range
-    // Arc covers: 34° to -146° going backwards = 34° → 0° → -90° → -146°
-    // In positive angles: 34° and (214° to 360°)
-    if (angle >= -146 && angle <= 34) {
+    if (angle >= ARC_END_ANGLE && angle <= START_ANGLE) {
       // In the arc range (using negative angles)
-      // Convert to percentage: 0% at 34°, 100% at -146°
-      const angleFromStart = 34 - angle; // How far from start (34°)
-      const percentage = angleFromStart / 180; // Divide by total arc span
+      // Convert to percentage: 0% at START_ANGLE, 100% at ARC_END_ANGLE
+      const angleFromStart = START_ANGLE - angle;
+      const percentage = angleFromStart / TOTAL_ARC_DEGREES;
       return Math.max(0, Math.min(1, percentage));
-    } else if (angle >= 214 && angle <= 360) {
-      // Also in arc range (using positive angle equivalent for -146° to 0°)
-      const angleFromStart = 34 + (360 - angle); // Wrap around
-      const percentage = angleFromStart / 180;
-      return Math.max(0, Math.min(1, percentage));
+    } else if (angle > ARC_END_ANGLE_POSITIVE || angle < 0) {
+      // Also in arc range (using positive angle equivalent for ARC_END_ANGLE to 0°)
+      // This handles the wrap-around from 360° to 0°
+      const normalizedAngle = angle < 0 ? angle + 360 : angle;
+      if (normalizedAngle >= ARC_END_ANGLE_POSITIVE) {
+        const angleFromStart = START_ANGLE + (360 - normalizedAngle);
+        const percentage = angleFromStart / TOTAL_ARC_DEGREES;
+        return Math.max(0, Math.min(1, percentage));
+      }
     }
     
     // Click is outside the arc (in the bottom gap)
