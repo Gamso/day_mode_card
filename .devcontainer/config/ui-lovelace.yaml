@@ -1,0 +1,14 @@
+title: Day Mode Dashboard
+views:
+  - title: Home
+    path: home
+    icon: mdi:home
+    cards:
+      - type: custom:day-mode-card
+        mode_jour_entity: input_select.mode_jour
+        mode_thermostat_entity: input_select.mode_thermostat
+
+      - type: entities
+        entities:
+          - entity: input_select.mode_jour
+          - entity: input_select.mode_thermostat

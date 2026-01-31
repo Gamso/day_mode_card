@@ -1,0 +1,379 @@
+import { LitElement, html, css, nothing, svg } from "lit";
+import { property, state, query } from "lit/decorators.js";
+import { localize } from "../localize/localize";
+
+interface DayModeCardConfig {
+  name?: string;
+  mode_jour_entity?: string;
+  mode_thermostat_entity?: string;
+}
+
+class DayModeCard extends LitElement {
+  @property({ attribute: false }) public hass: any;
+  @state() private _config!: DayModeCardConfig;
+  @query("svg.potentiometer") private _svg?: SVGSVGElement;
+
+  public static getStubConfig(): DayModeCardConfig {
+    return {
+      name: "Modes",
+      mode_jour_entity: "input_select.mode_jour",
+      mode_thermostat_entity: "input_select.mode_thermostat",
+    };
+  }
+
+  public setConfig(config: DayModeCardConfig): void {
+    if (!config) {
+      throw new Error("Configuration manquante");
+    }
+    this._config = {
+      name: config.name ?? "Modes",
+      mode_jour_entity: config.mode_jour_entity ?? "input_select.mode_jour",
+      mode_thermostat_entity:
+        config.mode_thermostat_entity ?? "input_select.mode_thermostat",
+    };
+  }
+
+  private getEntityState(entityId?: string) {
+    if (!entityId) return undefined;
+    return this.hass?.states?.[entityId];
+  }
+
+  private onSelect(entityId: string, ev: Event) {
+    const target = ev.target as HTMLSelectElement;
+    const option = target?.value;
+    if (!option) return;
+    this.hass.callService("input_select", "select_option", {
+      entity_id: entityId,
+      option,
+    });
+  }
+
+  private getThermoKnobRotation(
+    options: string[],
+    currentValue: string,
+  ): number {
+    const index = options.indexOf(currentValue);
+    if (index === -1) return 0;
+    const totalOptions = options.length;
+    // Rotation from -135deg to 135deg (270deg total)
+    return -135 + (index / (totalOptions - 1)) * 270;
+  }
+
+  private _getPercentageFromEvent(e: MouseEvent | TouchEvent): number {
+    if (!this._svg) return 0;
+
+    let clientX = 0;
+    let clientY = 0;
+
+    if (e instanceof MouseEvent) {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    } else if (e instanceof TouchEvent && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    }
+
+    const bound = this._svg.getBoundingClientRect();
+    const x = (2 * (clientX - bound.left - bound.width / 2)) / bound.width;
+    const y = (2 * (clientY - bound.top - bound.height / 2)) / bound.height;
+
+    const r = Math.sqrt(x * x + y * y);
+    const phi = Math.atan2(y, x);
+
+    const MAX_ANGLE = 270;
+    const ROTATE_ANGLE = 360 - MAX_ANGLE / 2 - 90;
+    const offset = (360 - MAX_ANGLE) / 2;
+    const rad2deg = (rad: number) => (rad / (2 * Math.PI)) * 360;
+    const angle = ((rad2deg(phi) + offset - ROTATE_ANGLE + 360) % 360) - offset;
+
+    return Math.max(Math.min(angle / MAX_ANGLE, 1), 0);
+  }
+
+  private _handleThermoClick(
+    entityId: string,
+    options: string[],
+    percentage: number,
+  ) {
+    const index = Math.round(percentage * (options.length - 1));
+    const option = options[Math.max(0, Math.min(index, options.length - 1))];
+
+    if (option) {
+      this.hass.callService("input_select", "select_option", {
+        entity_id: entityId,
+        option,
+      });
+    }
+  }
+
+  private _handleThermoSelectByIndex(
+    entityId: string,
+    options: string[],
+    index: number,
+  ) {
+    const safeIndex = Math.max(0, Math.min(index, options.length - 1));
+    const option = options[safeIndex];
+    if (option) {
+      this.hass.callService("input_select", "select_option", {
+        entity_id: entityId,
+        option,
+      });
+    }
+  }
+
+  protected render() {
+    if (!this.hass || !this._config) return nothing;
+    const jour = this.getEntityState(this._config.mode_jour_entity);
+    const thermo = this.getEntityState(this._config.mode_thermostat_entity);
+
+    const jourOptions: string[] = jour?.attributes?.options ?? [];
+    const thermoOptions: string[] = thermo?.attributes?.options ?? [];
+
+    const title = this._config.name ?? localize(this.hass, "card.title");
+
+    return html`
+      <ha-card header="${title}">
+        <div class="grid">
+          <div class="item">
+            <div class="label">${localize(this.hass, "card.mode_jour")}</div>
+            ${jour
+              ? html`<select
+                  @change=${(e: Event) => this.onSelect(jour.entity_id, e)}
+                >
+                  ${jourOptions.map(
+                    (opt) =>
+                      html`<option
+                        value="${opt}"
+                        ?selected=${opt === jour.state}
+                      >
+                        ${opt}
+                      </option>`,
+                  )}
+                </select>`
+              : html`<div class="error">
+                  ${localize(this.hass, "card.entity_not_found", {
+                    entity: String(this._config.mode_jour_entity),
+                  })}
+                </div>`}
+          </div>
+
+          <div class="item thermo-item">
+            <div class="label">
+              ${localize(this.hass, "card.mode_thermostat")}
+            </div>
+            ${thermo
+              ? html`
+                  <div class="potentiometer-wrapper">
+                    <svg
+                      class="potentiometer"
+                      viewBox="0 0 200 200"
+                      @click=${(e: MouseEvent) => {
+                        const percentage = this._getPercentageFromEvent(e);
+                        this._handleThermoClick(
+                          thermo.entity_id,
+                          thermoOptions,
+                          percentage,
+                        );
+                      }}
+                    >
+                      <!-- Arc de fond (3/4 cercle, ouverture en bas) -->
+                      <path
+                        d="M 30 150 A 85 85 0 1 1 170 150"
+                        fill="none"
+                        stroke="var(--divider-color, #e0e0e0)"
+                        stroke-width="12"
+                        stroke-linecap="round"
+                        opacity="0.3"
+                      />
+
+                      <!-- Arc pour chaque option -->
+                      ${thermoOptions.map((opt, i) => {
+                        const totalOptions = thermoOptions.length;
+                        const arcPerOption = 250 / totalOptions;
+                        // Calcul des angles en degrés (arc de 250° = 45° à 295°)
+                        const startDeg = 45 + i * arcPerOption;
+                        const endDeg = 45 + (i + 1) * arcPerOption;
+                        const startRad = (startDeg * Math.PI) / 180;
+                        const endRad = (endDeg * Math.PI) / 180;
+                        const radius = 85;
+                        const cx = 100;
+                        const cy = 100;
+
+                        const x1 = cx + radius * Math.cos(startRad);
+                        const y1 = cy + radius * Math.sin(startRad);
+                        const x2 = cx + radius * Math.cos(endRad);
+                        const y2 = cy + radius * Math.sin(endRad);
+
+                        const largeArc = arcPerOption > 180 ? 1 : 0;
+                        const pathData = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`;
+                        const isActive = opt === thermo.state;
+
+                        return html`
+                          <path
+                            d="${pathData}"
+                            fill="none"
+                            stroke="${isActive
+                              ? "var(--primary-color, #3b82f6)"
+                              : "var(--divider-color, #e0e0e0)"}"
+                            stroke-width="12"
+                            stroke-linecap="round"
+                            style="cursor: pointer; transition: opacity 0.2s;"
+                            opacity="${isActive ? 1 : 0.3}"
+                            @click=${(e: Event) => {
+                              e.stopPropagation();
+                              this._handleThermoSelectByIndex(
+                                thermo.entity_id,
+                                thermoOptions,
+                                i,
+                              );
+                            }}
+                          />
+                        `;
+                      })}
+
+                      <!-- Repères et labels sur l'arc -->
+                      ${thermoOptions.map((opt, i) => {
+                        const totalOptions = thermoOptions.length;
+                        const arcPerOption = 250 / totalOptions;
+                        const labelDeg = 45 + (i + 0.5) * arcPerOption;
+                        const labelRad = (labelDeg * Math.PI) / 180;
+                        const radius = 85;
+                        const cx = 100;
+                        const cy = 100;
+
+                        const pointX = cx + radius * Math.cos(labelRad);
+                        const pointY = cy + radius * Math.sin(labelRad);
+
+                        // Calcul du rayon pour le texte (un peu plus loin)
+                        const textRadius = radius + 20;
+                        const textX = cx + textRadius * Math.cos(labelRad);
+                        const textY = cy + textRadius * Math.sin(labelRad);
+
+                        const isActive = opt === thermo.state;
+
+                        return html`
+                          <!-- Pastille pleine cliquable -->
+                          <circle
+                            cx="${pointX}"
+                            cy="${pointY}"
+                            r="12"
+                            fill="var(--primary-color, #3b82f6)"
+                            style="cursor: pointer; transition: all 0.2s; opacity: ${isActive
+                              ? 1
+                              : 0.6};"
+                            @click=${(e: Event) => {
+                              e.stopPropagation();
+                              this._handleThermoSelectByIndex(
+                                thermo.entity_id,
+                                thermoOptions,
+                                i,
+                              );
+                            }}
+                          />
+                          <!-- Label texte -->
+                          <text
+                            x="${textX}"
+                            y="${textY}"
+                            text-anchor="middle"
+                            dominant-baseline="middle"
+                            fill="${isActive
+                              ? "var(--primary-color, #3b82f6)"
+                              : "var(--primary-text-color)"}"
+                            font-size="${isActive ? "14" : "12"}"
+                            font-weight="${isActive ? "700" : "500"}"
+                            style="cursor: pointer; user-select: none;"
+                            @click=${(e: Event) => {
+                              e.stopPropagation();
+                              this._handleThermoSelectByIndex(
+                                thermo.entity_id,
+                                thermoOptions,
+                                i,
+                              );
+                            }}
+                          >
+                            ${opt}
+                          </text>
+                        `;
+                      })}
+
+                      <!-- Valeur centrale -->
+                      <text
+                        x="100"
+                        y="105"
+                        text-anchor="middle"
+                        dominant-baseline="middle"
+                        fill="var(--primary-text-color)"
+                        font-size="20"
+                        font-weight="600"
+                      >
+                        ${thermo.state}
+                      </text>
+                    </svg>
+                  </div>
+                `
+              : html`<div class="error">
+                  ${localize(this.hass, "card.entity_not_found", {
+                    entity: String(this._config.mode_thermostat_entity),
+                  })}
+                </div>`}
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  static styles = css`
+    ha-card {
+      padding: 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+    .item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .label {
+      font-weight: 600;
+    }
+    select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--divider-color, #ccc);
+      background: var(--card-background-color);
+      color: var(--primary-text-color);
+    }
+    .error {
+      color: var(--error-color);
+    }
+
+    /* Potentiometer Styles */
+    .thermo-item {
+      align-items: center;
+    }
+    .potentiometer-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 20px 0;
+    }
+    .potentiometer {
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      aspect-ratio: 1;
+      cursor: pointer;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+  `;
+}
+
+if (!customElements.get("day-mode-card")) {
+  customElements.define("day-mode-card", DayModeCard);
+}
+
+export { DayModeCard };

@@ -1,0 +1,37 @@
+homeassistant:
+  name: Day Mode DevContainer
+  latitude: 48.8566
+  longitude: 2.3522
+  elevation: 0
+  unit_system: metric
+  country: FR
+  time_zone: Europe/Paris
+
+# Enable development mode
+logger:
+  default: info
+  logs:
+    homeassistant.components.lovelace: debug
+
+# User interface
+lovelace:
+  mode: storage
+  resources:
+    - url: /local/day_mode_card/day-mode-card.js
+      type: module
+
+input_select:
+  mode_jour:
+    name: Mode jour
+    options:
+      - Maison
+      - Travail
+      - Télétravail
+      - Absence
+  mode_thermostat:
+    name: Mode thermostat
+    options:
+      - Eteint
+      - Chauffage
+      - Climatisation
+      - Ventilation
