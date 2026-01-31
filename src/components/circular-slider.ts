@@ -29,7 +29,7 @@ export class DayModeCircularSlider extends LitElement {
   private _valueToPercentage(index: number): number {
     // Divide the arc into equal segments for each mode
     // For 3 modes: segment 0 = 0-33.33%, segment 1 = 33.33-66.67%, segment 2 = 66.67-100%
-    if (THERMOSTAT_MODES.length === 0) return 0;
+    if (THERMOSTAT_MODES.length <= 1) return 0;
     return index / THERMOSTAT_MODES.length;
   }
 
