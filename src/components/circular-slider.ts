@@ -124,7 +124,8 @@ export class DayModeCircularSlider extends LitElement {
               const endX = CIRCLE_CENTER_X + ARC_RADIUS * Math.cos(endAngle);
               const endY = CIRCLE_CENTER_Y + ARC_RADIUS * Math.sin(endAngle);
 
-              // Large arc flag for arcs > 180°
+              // Large arc flag: 0 for arcs < 180°, 1 for arcs >= 180°
+              // Each mode segment spans ~60° (180° / 3), so we use 0
               const largeArcFlag = 0;
               const sweepFlag = 1;
 
@@ -154,11 +155,16 @@ export class DayModeCircularSlider extends LitElement {
           `}
 
           <!-- Segments for each mode - only show the active one colored -->
-          ${THERMOSTAT_MODES.filter(
-            (mode) => mode === this.currentValue,
-          ).map((mode, _, arr) => {
-            const i = THERMOSTAT_MODES.indexOf(mode);
-            const [dasharray, dashoffset] = this._strokeDashArc(i, i + 1);
+          ${(() => {
+            const activeIndex = THERMOSTAT_MODES.findIndex(
+              (mode) => mode === this.currentValue,
+            );
+            if (activeIndex === -1) return svg``;
+
+            const [dasharray, dashoffset] = this._strokeDashArc(
+              activeIndex,
+              activeIndex + 1,
+            );
 
             return svg`
               <path
@@ -174,7 +180,7 @@ export class DayModeCircularSlider extends LitElement {
                 style="cursor: pointer; transition: opacity 0.2s, stroke 0.2s;"
               />
             `;
-          })}
+          })()}
 
           <!-- Clickable areas for each zone (invisible overlay) -->
           ${THERMOSTAT_MODES.map((mode, i) => {
