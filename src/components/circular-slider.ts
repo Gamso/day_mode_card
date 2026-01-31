@@ -29,9 +29,9 @@ export class DayModeCircularSlider extends LitElement {
 
   private _valueToPercentage(index: number): number {
     // Reverse the index mapping so that:
-    // - index 0 (Chauffage, first in list) -> 100% (left side of arc)
-    // - index 1 (Climatisation) -> 66.67% (top/middle)
-    // - index 2 (Ventilation, last in list) -> 33.33% -> 0% (right side of arc)
+    // - index 0 (Chauffage, first in list) -> 100% to 66.67% (left side of arc)
+    // - index 1 (Climatisation) -> 66.67% to 33.33% (top/middle)
+    // - index 2 (Ventilation, last in list) -> 33.33% to 0% (right side of arc)
     if (THERMOSTAT_MODES.length <= 1) return 0;
     const reversedIndex = THERMOSTAT_MODES.length - index;
     return reversedIndex / THERMOSTAT_MODES.length;
