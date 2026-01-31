@@ -111,11 +111,13 @@ export class DayModeCircularSlider extends LitElement {
               const midPercentage = (percentage + nextPercentage) / 2;
 
               // Calculate start and end angles for this segment
+              // Arc goes from right (34°) backwards through top to left
+              // So we SUBTRACT the angle offset
               const startAngle =
-                (START_ANGLE + percentage * TOTAL_ARC_DEGREES) *
+                (START_ANGLE - percentage * TOTAL_ARC_DEGREES) *
                 (Math.PI / 180);
               const endAngle =
-                (START_ANGLE + nextPercentage * TOTAL_ARC_DEGREES) *
+                (START_ANGLE - nextPercentage * TOTAL_ARC_DEGREES) *
                 (Math.PI / 180);
 
               // Calculate path for text to follow
@@ -129,7 +131,9 @@ export class DayModeCircularSlider extends LitElement {
               // Large arc flag: 0 for arcs < 180°, 1 for arcs >= 180°
               // Each mode segment spans ~60° (180° / 3), so we use 0
               const largeArcFlag = 0;
-              const sweepFlag = 1;
+              // Sweep flag: 0 for counter-clockwise, 1 for clockwise
+              // Since we're going backwards (decreasing angles), we need sweep=0
+              const sweepFlag = 0;
 
               const textPath = `M ${startX} ${startY} A ${ARC_RADIUS} ${ARC_RADIUS} 0 ${largeArcFlag} ${sweepFlag} ${endX} ${endY}`;
 

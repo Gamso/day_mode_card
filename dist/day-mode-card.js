@@ -36,10 +36,10 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
         <svg viewBox="0 0 200 200" @click=${this._onSvgClick}>
           <!-- Define text paths for each zone -->
           <defs>
-            ${$t.map((t,e)=>{const s=this._valueToPercentage(e),i=this._valueToPercentage(e+1),o=(34.2+180*s)*(Math.PI/180),r=(34.2+180*i)*(Math.PI/180),n=100+mt*Math.cos(o),a=102+mt*Math.sin(o),h=100+mt*Math.cos(r),c=102+mt*Math.sin(r);return W`
+            ${$t.map((t,e)=>{const s=this._valueToPercentage(e),i=this._valueToPercentage(e+1),o=(34.2-180*s)*(Math.PI/180),r=(34.2-180*i)*(Math.PI/180),n=100+mt*Math.cos(o),a=102+mt*Math.sin(o),h=100+mt*Math.cos(r),c=102+mt*Math.sin(r);return W`
                 <path
                   id="textPath-${e}"
-                  d="${`M ${n} ${a} A 85 85 0 0 1 ${h} ${c}`}"
+                  d="${`M ${n} ${a} A 85 85 0 0 0 ${h} ${c}`}"
                   fill="none"
                 />
               `})}
