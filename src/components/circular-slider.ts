@@ -113,7 +113,10 @@ export class DayModeCircularSlider extends LitElement {
     // If percentage is -1, the click was outside the arc
     if (percentage < 0) return;
     
-    const index = Math.round(percentage * (THERMOSTAT_MODES.length - 1));
+    // Since we reversed the index mapping (index 0 at 100%, index 2 at 0%),
+    // we need to reverse the click mapping too
+    const rawIndex = Math.round(percentage * (THERMOSTAT_MODES.length - 1));
+    const index = THERMOSTAT_MODES.length - 1 - rawIndex;
     this._onSelect(Math.max(0, Math.min(index, THERMOSTAT_MODES.length - 1)));
   }
 
@@ -150,8 +153,8 @@ export class DayModeCircularSlider extends LitElement {
               // Each mode segment spans ~60° (180° / 3), so we use 0
               const largeArcFlag = 0;
               // Sweep flag: 0 for counter-clockwise, 1 for clockwise
-              // Since we're going backwards (decreasing angles), we need sweep=0
-              const sweepFlag = 0;
+              // Use sweep=1 so text follows the arc in a readable direction
+              const sweepFlag = 1;
 
               const textPath = `M ${startX} ${startY} A ${ARC_RADIUS} ${ARC_RADIUS} 0 ${largeArcFlag} ${sweepFlag} ${endX} ${endY}`;
 
