@@ -64,20 +64,33 @@ export class DayModeCircularSlider extends LitElement {
     const x = (2 * (clientX - bound.left - bound.width / 2)) / bound.width;
     const y = (2 * (clientY - bound.top - bound.height / 2)) / bound.height;
 
-    // Calculate angle for 180° arc (opening at bottom)
+    // Calculate angle from center
     const phi = Math.atan2(y, x);
     const rad2deg = (rad: number) => (rad / (2 * Math.PI)) * 360;
     let angle = rad2deg(phi);
 
-    // Adjust angle for 180° arc with opening at bottom (left=-90°, right=90°, bottom=180° or -180°)
-    // Map angle so that: left side = 0%, right side = 100%, bottom = center
-    if (angle < -90) angle = 180 + angle; // bottom left quadrant
-    if (angle > 90) angle = 180 - angle; // bottom right quadrant
-
-    // Normalize to 0-180 range
-    const normalized = Math.max(0, Math.min(180, 90 + angle));
-
-    return normalized / 180;
+    // The arc goes from 34° (right) backwards through -90° (top) to -146°/214° (left)
+    // Valid arc range: 34° to -146° (going backwards/counterclockwise)
+    // Which wraps to: 34° to 0° to -90° to -146° (or 214° in positive angles)
+    
+    // Check if click is in the valid arc range
+    // Arc covers: 34° to -146° going backwards = 34° → 0° → -90° → -146°
+    // In positive angles: 34° and (214° to 360°)
+    if (angle >= -146 && angle <= 34) {
+      // In the arc range (using negative angles)
+      // Convert to percentage: 0% at 34°, 100% at -146°
+      const angleFromStart = 34 - angle; // How far from start (34°)
+      const percentage = angleFromStart / 180; // Divide by total arc span
+      return Math.max(0, Math.min(1, percentage));
+    } else if (angle >= 214 && angle <= 360) {
+      // Also in arc range (using positive angle equivalent for -146° to 0°)
+      const angleFromStart = 34 + (360 - angle); // Wrap around
+      const percentage = angleFromStart / 180;
+      return Math.max(0, Math.min(1, percentage));
+    }
+    
+    // Click is outside the arc (in the bottom gap)
+    return -1; // Return invalid value
   }
 
   private _onSelect(index: number) {
@@ -95,6 +108,9 @@ export class DayModeCircularSlider extends LitElement {
 
   private _onSvgClick(e: MouseEvent) {
     const percentage = this._getPercentageFromEvent(e);
+    // If percentage is -1, the click was outside the arc
+    if (percentage < 0) return;
+    
     const index = Math.round(percentage * (THERMOSTAT_MODES.length - 1));
     this._onSelect(Math.max(0, Math.min(index, THERMOSTAT_MODES.length - 1)));
   }
