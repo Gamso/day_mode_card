@@ -253,25 +253,6 @@ export class DayModeCircularSlider extends LitElement {
       cursor: pointer;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
-
-    .gauge-background {
-      fill: none;
-      stroke: var(--divider-color, #e0e0e0);
-      stroke-linecap: butt;
-      opacity: 0.3;
-    }
-
-    .gauge-segment {
-      fill: none;
-      stroke-linecap: butt;
-      transition:
-        opacity 0.3s,
-        stroke 0.3s;
-    }
-
-    .gauge-segment.active {
-      opacity: 1;
-    }
   `;
 }
 
