@@ -158,7 +158,7 @@ export class DayModeCircularSlider extends LitElement {
             const isActive = mode === this.currentValue;
 
             // Only render colored segment if active
-            if (!isActive) return null;
+            if (!isActive) return svg``;
 
             return svg`
               <path
@@ -265,10 +265,6 @@ export class DayModeCircularSlider extends LitElement {
 
     .gauge-segment.active {
       opacity: 1;
-    }
-
-    text {
-      pointer-events: none;
     }
   `;
 }

@@ -72,7 +72,7 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
                 opacity="1"
                 style="cursor: pointer; transition: opacity 0.2s, stroke 0.2s;"
               />
-            `:null})}
+            `:W``})}
 
           <!-- Clickable areas for each zone (invisible overlay) -->
           ${$t.map((t,e)=>{const[s,i]=this._strokeDashArc(e,e+1);return W`
@@ -148,10 +148,6 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
 
     .gauge-segment.active {
       opacity: 1;
-    }
-
-    text {
-      pointer-events: none;
     }
   `,t([ut({attribute:!1})],vt.prototype,"hass",void 0),t([ut({type:String})],vt.prototype,"entityId",void 0),t([ut({type:String})],vt.prototype,"currentValue",void 0),t([
 /**
