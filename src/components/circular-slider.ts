@@ -28,10 +28,13 @@ export class DayModeCircularSlider extends LitElement {
   @query("svg") private _svg?: SVGSVGElement;
 
   private _valueToPercentage(index: number): number {
-    // Divide the arc into equal segments for each mode
-    // For 3 modes: segment 0 = 0-33.33%, segment 1 = 33.33-66.67%, segment 2 = 66.67-100%
+    // Reverse the index mapping so that:
+    // - index 0 (Chauffage, first in list) -> 100% (left side of arc)
+    // - index 1 (Climatisation) -> 66.67% (top/middle)
+    // - index 2 (Ventilation, last in list) -> 33.33% -> 0% (right side of arc)
     if (THERMOSTAT_MODES.length <= 1) return 0;
-    return index / THERMOSTAT_MODES.length;
+    const reversedIndex = THERMOSTAT_MODES.length - index;
+    return reversedIndex / THERMOSTAT_MODES.length;
   }
 
   private _strokeDashArc(fromIndex: number, toIndex: number): [string, string] {
@@ -271,7 +274,6 @@ export class DayModeCircularSlider extends LitElement {
       max-width: 280px;
       height: auto;
       aspect-ratio: 1;
-      cursor: pointer;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
   `;
