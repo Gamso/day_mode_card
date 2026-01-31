@@ -8,6 +8,7 @@ const THERMOSTAT_MODES = ["Chauffage", "Climatisation", "Ventilation"];
 const ARC_RADIUS = 85;
 const ARC_PATH = "M 30 150 A 85 85 0 1 1 170 150"; // 180° arc, opening at bottom
 const ARC_LENGTH = 85 * 2 * Math.PI * (180 / 360); // Circumference for 180°
+const STROKE_WIDTH = 25; // Increased stroke width for better visibility
 
 // Circle center for this arc (calculated from arc geometry)
 const CIRCLE_CENTER_X = 100;
@@ -99,69 +100,95 @@ export class DayModeCircularSlider extends LitElement {
     return html`
       <div class="slider-container">
         <svg viewBox="0 0 200 200" @click=${this._onSvgClick}>
-          <!-- Background arc -->
+          <!-- Define text paths for each zone -->
+          <defs>
+            ${THERMOSTAT_MODES.map((mode, i) => {
+              const percentage = this._valueToPercentage(i);
+              const nextPercentage = this._valueToPercentage(i + 1);
+              const midPercentage = (percentage + nextPercentage) / 2;
+
+              // Calculate start and end angles for this segment
+              const startAngle =
+                (START_ANGLE + percentage * TOTAL_ARC_DEGREES) *
+                (Math.PI / 180);
+              const endAngle =
+                (START_ANGLE + nextPercentage * TOTAL_ARC_DEGREES) *
+                (Math.PI / 180);
+
+              // Calculate path for text to follow
+              const startX =
+                CIRCLE_CENTER_X + ARC_RADIUS * Math.cos(startAngle);
+              const startY =
+                CIRCLE_CENTER_Y + ARC_RADIUS * Math.sin(startAngle);
+              const endX = CIRCLE_CENTER_X + ARC_RADIUS * Math.cos(endAngle);
+              const endY = CIRCLE_CENTER_Y + ARC_RADIUS * Math.sin(endAngle);
+
+              // Large arc flag for arcs > 180°
+              const largeArcFlag = 0;
+              const sweepFlag = 1;
+
+              const textPath = `M ${startX} ${startY} A ${ARC_RADIUS} ${ARC_RADIUS} 0 ${largeArcFlag} ${sweepFlag} ${endX} ${endY}`;
+
+              return svg`
+                <path
+                  id="textPath-${i}"
+                  d="${textPath}"
+                  fill="none"
+                />
+              `;
+            })}
+          </defs>
+
+          <!-- Background arc (light gray, full width) -->
           ${svg`
             <path
               class="gauge-background"
               d="${ARC_PATH}"
               fill="none"
               stroke="var(--divider-color, #e0e0e0)"
-              stroke-width="12"
-              stroke-linecap="round"
+              stroke-width="${STROKE_WIDTH}"
+              stroke-linecap="butt"
               opacity="0.3"
             />
           `}
 
-          <!-- Segments for each mode -->
+          <!-- Segments for each mode - only show the active one colored -->
           ${THERMOSTAT_MODES.map((mode, i) => {
             const [dasharray, dashoffset] = this._strokeDashArc(i, i + 1);
             const isActive = mode === this.currentValue;
 
+            // Only render colored segment if active
+            if (!isActive) return null;
+
             return svg`
               <path
-                class="gauge-segment ${isActive ? "active" : ""}"
+                class="gauge-segment active"
                 d="${ARC_PATH}"
                 fill="none"
-                stroke="${
-                  isActive
-                    ? "var(--primary-color, #3b82f6)"
-                    : "var(--divider-color, #e0e0e0)"
-                }"
-                stroke-width="12"
-                stroke-linecap="round"
+                stroke="var(--primary-color, #3b82f6)"
+                stroke-width="${STROKE_WIDTH}"
+                stroke-linecap="butt"
                 stroke-dasharray="${dasharray}"
                 stroke-dashoffset="${dashoffset}"
-                opacity="${isActive ? 1 : 0.3}"
+                opacity="1"
                 style="cursor: pointer; transition: opacity 0.2s, stroke 0.2s;"
-                @click=${(e: Event) => {
-                  e.stopPropagation();
-                  this._onSelect(i);
-                }}
               />
             `;
           })}
 
-          <!-- Dots (pastilles) at each mode position -->
+          <!-- Clickable areas for each zone (invisible overlay) -->
           ${THERMOSTAT_MODES.map((mode, i) => {
-            const percentage = this._valueToPercentage(i);
-            // Place points along the arc from START_ANGLE (right, Chauffage) to END_ANGLE (left, Ventilation)
-            // The arc passes through the top (270°)
-            const angle =
-              (START_ANGLE + percentage * TOTAL_ARC_DEGREES) * (Math.PI / 180);
-
-            const dotX = CIRCLE_CENTER_X + ARC_RADIUS * Math.cos(angle);
-            const dotY = CIRCLE_CENTER_Y + ARC_RADIUS * Math.sin(angle);
-
-            const isActive = mode === this.currentValue;
+            const [dasharray, dashoffset] = this._strokeDashArc(i, i + 1);
 
             return svg`
-              <circle
-                cx="${dotX}"
-                cy="${dotY}"
-                r="6"
-                fill="${isActive ? "var(--primary-color, #3b82f6)" : "white"}"
-                stroke="var(--primary-color, #3b82f6)"
-                stroke-width="2"
+              <path
+                d="${ARC_PATH}"
+                fill="none"
+                stroke="transparent"
+                stroke-width="${STROKE_WIDTH + 10}"
+                stroke-linecap="butt"
+                stroke-dasharray="${dasharray}"
+                stroke-dashoffset="${dashoffset}"
                 style="cursor: pointer;"
                 @click=${(e: Event) => {
                   e.stopPropagation();
@@ -171,39 +198,26 @@ export class DayModeCircularSlider extends LitElement {
             `;
           })}
 
-          <!-- Labels inside arc -->
+          <!-- Curved text labels on the arc -->
           ${THERMOSTAT_MODES.map((mode, i) => {
-            const percentage = this._valueToPercentage(i);
-            const angle =
-              (START_ANGLE + percentage * TOTAL_ARC_DEGREES) * (Math.PI / 180);
-
-            // Label position inside the arc (closer to center)
-            const labelRadius = ARC_RADIUS - 30;
-            const labelX = CIRCLE_CENTER_X + labelRadius * Math.cos(angle);
-            const labelY = CIRCLE_CENTER_Y + labelRadius * Math.sin(angle);
-
-            const isActive = mode === this.currentValue;
-
             return svg`
               <text
-                x="${labelX}"
-                y="${labelY}"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                fill="${
-                  isActive
-                    ? "var(--primary-color, #3b82f6)"
-                    : "var(--primary-text-color)"
-                }"
-                font-size="${isActive ? "14" : "12"}"
-                font-weight="${isActive ? "700" : "500"}"
+                fill="var(--primary-text-color)"
+                font-size="12"
+                font-weight="600"
                 style="cursor: pointer; user-select: none;"
                 @click=${(e: Event) => {
                   e.stopPropagation();
                   this._onSelect(i);
                 }}
               >
-                ${mode}
+                <textPath
+                  href="#textPath-${i}"
+                  startOffset="50%"
+                  text-anchor="middle"
+                >
+                  ${mode}
+                </textPath>
               </text>
             `;
           })}
@@ -237,22 +251,24 @@ export class DayModeCircularSlider extends LitElement {
     .gauge-background {
       fill: none;
       stroke: var(--divider-color, #e0e0e0);
-      stroke-width: 12;
-      stroke-linecap: round;
+      stroke-linecap: butt;
       opacity: 0.3;
     }
 
     .gauge-segment {
       fill: none;
-      stroke-width: 12;
-      stroke-linecap: round;
+      stroke-linecap: butt;
       transition:
-        opacity 0.2s,
-        stroke 0.2s;
+        opacity 0.3s,
+        stroke 0.3s;
     }
 
     .gauge-segment.active {
       opacity: 1;
+    }
+
+    text {
+      pointer-events: none;
     }
   `;
 }
