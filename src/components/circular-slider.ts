@@ -27,8 +27,9 @@ export class DayModeCircularSlider extends LitElement {
   @query("svg") private _svg?: SVGSVGElement;
 
   private _valueToPercentage(index: number): number {
-    if (THERMOSTAT_MODES.length <= 1) return 0;
-    return index / (THERMOSTAT_MODES.length - 1);
+    // Divide the arc into equal segments for each mode
+    // For 3 modes: segment 0 = 0-33.33%, segment 1 = 33.33-66.67%, segment 2 = 66.67-100%
+    return index / THERMOSTAT_MODES.length;
   }
 
   private _strokeDashArc(fromIndex: number, toIndex: number): [string, string] {
