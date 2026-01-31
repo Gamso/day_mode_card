@@ -17,7 +17,6 @@ const CIRCLE_CENTER_Y = 102; // Approximately (actual: 101.78)
 
 // Angle range for the arc (going backwards from right through top to left)
 const START_ANGLE = 34.2; // Right point (170, 150) - Start of arc at 0%
-const END_ANGLE = 144.2; // Left point (30, 150) - Original endpoint (not used for calculations)
 const TOTAL_ARC_DEGREES = 180; // 180° arc passing through top
 const ARC_END_ANGLE = START_ANGLE - TOTAL_ARC_DEGREES; // -145.8° (end of arc at 100%)
 const ARC_END_ANGLE_POSITIVE = ARC_END_ANGLE + 360; // 214.2° (positive equivalent)
@@ -77,23 +76,19 @@ export class DayModeCircularSlider extends LitElement {
     
     // Check if click is in the valid arc range
     if (angle >= ARC_END_ANGLE && angle <= START_ANGLE) {
-      // In the arc range (using negative angles)
+      // In the arc range (including negative angles from -145.8° to 34.2°)
       // Convert to percentage: 0% at START_ANGLE, 100% at ARC_END_ANGLE
       const angleFromStart = START_ANGLE - angle;
       const percentage = angleFromStart / TOTAL_ARC_DEGREES;
       return Math.max(0, Math.min(1, percentage));
-    } else if (angle > ARC_END_ANGLE_POSITIVE || angle < 0) {
-      // Also in arc range (using positive angle equivalent for ARC_END_ANGLE to 0°)
-      // This handles the wrap-around from 360° to 0°
-      const normalizedAngle = angle < 0 ? angle + 360 : angle;
-      if (normalizedAngle >= ARC_END_ANGLE_POSITIVE) {
-        const angleFromStart = START_ANGLE + (360 - normalizedAngle);
-        const percentage = angleFromStart / TOTAL_ARC_DEGREES;
-        return Math.max(0, Math.min(1, percentage));
-      }
+    } else if (angle >= ARC_END_ANGLE_POSITIVE) {
+      // Also in arc range (positive angles >= 214.2°, wrapping from 360° toward 0°)
+      const angleFromStart = START_ANGLE + (360 - angle);
+      const percentage = angleFromStart / TOTAL_ARC_DEGREES;
+      return Math.max(0, Math.min(1, percentage));
     }
     
-    // Click is outside the arc (in the bottom gap)
+    // Click is outside the arc (in the bottom gap between 34° and 214°)
     return -1; // Return invalid value
   }
 
