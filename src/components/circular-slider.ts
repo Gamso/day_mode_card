@@ -1,40 +1,46 @@
 import { LitElement, html, css, svg } from "lit";
 import { property, query } from "lit/decorators.js";
 
-// Hardcoded thermostat modes (excluding "Eteint" which is handled by button)
+/* =======================
+   CONFIGURATION
+======================= */
+
 const THERMOSTAT_MODES = ["Chauffage", "Climatisation", "Ventilation"];
 
-// Arc configuration - similar to xiaomi (180° arc with opening at bottom)
 const ARC_RADIUS = 85;
-const ARC_PATH = "M 30 150 A 85 85 0 1 1 170 150"; // 180° arc, opening at bottom
-const ARC_LENGTH = 85 * 2 * Math.PI * (180 / 360); // Circumference for 180°
-const STROKE_WIDTH = 25; // Increased stroke width for better visibility
-const CLICK_AREA_PADDING = 10; // Additional padding for clickable area
+const STROKE_WIDTH = 25;
+const CLICK_AREA_PADDING = 10;
 
-// Circle center for this arc (calculated from arc geometry)
-const CIRCLE_CENTER_X = 100;
-const CIRCLE_CENTER_Y = 102; // Approximately (actual: 101.78)
+// Arc 180° (ouverture en bas)
+const ARC_PATH = "M 30 150 A 85 85 0 1 1 170 150";
 
-// Angle range for the arc (going backwards from right through top to left)
-const START_ANGLE = 34.2; // Right point (170, 150) - Start of arc at 0%
-const TOTAL_ARC_DEGREES = 180; // 180° arc passing through top
-const ARC_END_ANGLE = START_ANGLE - TOTAL_ARC_DEGREES; // -145.8° (end of arc at 100%)
-const ARC_END_ANGLE_POSITIVE = ARC_END_ANGLE + 360; // 214.2° (positive equivalent)
+// Longueur réelle de l’arc
+const ARC_LENGTH = Math.PI * ARC_RADIUS;
+
+// Angles pour le calcul clic
+const START_ANGLE = 34.2;
+const TOTAL_ARC_DEGREES = 180;
+const ARC_END_ANGLE = START_ANGLE - TOTAL_ARC_DEGREES;
+const ARC_END_ANGLE_POSITIVE = ARC_END_ANGLE + 360;
+
+/* =======================
+   COMPONENT
+======================= */
 
 export class DayModeCircularSlider extends LitElement {
-  @property({ attribute: false }) public hass: any;
-  @property({ type: String }) public entityId?: string;
-  @property({ type: String }) public currentValue?: string;
+  @property({ attribute: false }) public hass!: any;
+  @property() public entityId!: string;
+  @property() public currentValue!: string;
+  @property({ type: Number }) private selectedIndex = -1;
   @query("svg") private _svg?: SVGSVGElement;
 
+  /* =======================
+     UTILS
+  ======================= */
+
   private _valueToPercentage(index: number): number {
-    // Reverse the index mapping so that:
-    // - index 0 (Chauffage, first in list) -> 100% to 66.67% (left side of arc)
-    // - index 1 (Climatisation) -> 66.67% to 33.33% (top/middle)
-    // - index 2 (Ventilation, last in list) -> 33.33% to 0% (right side of arc)
-    if (THERMOSTAT_MODES.length <= 1) return 0;
-    const reversedIndex = THERMOSTAT_MODES.length - index;
-    return reversedIndex / THERMOSTAT_MODES.length;
+    const max = THERMOSTAT_MODES.length - 1;
+    return max <= 0 ? 0 : 1 - index / max;
   }
 
   private _strokeDashArc(fromIndex: number, toIndex: number): [string, string] {
@@ -42,175 +48,106 @@ export class DayModeCircularSlider extends LitElement {
     const end = this._valueToPercentage(toIndex);
 
     const arc = Math.max((end - start) * ARC_LENGTH, 0);
-    const arcOffset = start * ARC_LENGTH;
+    const offset = start * ARC_LENGTH;
 
-    const strokeDasharray = `${arc} ${ARC_LENGTH - arc}`;
-    const strokeDashOffset = `-${arcOffset}`;
-
-    return [strokeDasharray, strokeDashOffset];
+    return [`${arc} ${ARC_LENGTH - arc}`, `-${offset}`];
   }
 
-  private _getPercentageFromEvent(e: MouseEvent | TouchEvent): number {
-    if (!this._svg) return 0;
+  private _getPercentageFromEvent(e: MouseEvent): number {
+    if (!this._svg) return -1;
 
-    let clientX = 0;
-    let clientY = 0;
+    const rect = this._svg.getBoundingClientRect();
+    const x = (2 * (e.clientX - rect.left - rect.width / 2)) / rect.width;
+    const y = (2 * (e.clientY - rect.top - rect.height / 2)) / rect.height;
 
-    if (e instanceof MouseEvent) {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    } else if (e instanceof TouchEvent && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    }
+    const angle = (Math.atan2(y, x) * 180) / Math.PI;
 
-    const bound = this._svg.getBoundingClientRect();
-    const x = (2 * (clientX - bound.left - bound.width / 2)) / bound.width;
-    const y = (2 * (clientY - bound.top - bound.height / 2)) / bound.height;
-
-    // Calculate angle from center
-    const phi = Math.atan2(y, x);
-    const rad2deg = (rad: number) => (rad / (2 * Math.PI)) * 360;
-    let angle = rad2deg(phi);
-
-    // The arc goes from START_ANGLE (right) backwards through -90° (top) to ARC_END_ANGLE (left)
-    // Valid arc range: START_ANGLE to ARC_END_ANGLE (going backwards/counterclockwise)
-    // In positive angles: START_ANGLE and (ARC_END_ANGLE_POSITIVE to 360)
-    
-    // Check if click is in the valid arc range
     if (angle >= ARC_END_ANGLE && angle <= START_ANGLE) {
-      // In the arc range (including negative angles from -145.8° to 34.2°)
-      // Convert to percentage: 0% at START_ANGLE, 100% at ARC_END_ANGLE
-      const angleFromStart = START_ANGLE - angle;
-      const percentage = angleFromStart / TOTAL_ARC_DEGREES;
-      return Math.max(0, Math.min(1, percentage));
-    } else if (angle >= ARC_END_ANGLE_POSITIVE) {
-      // Also in arc range (positive angles >= 214.2°, wrapping from 360° toward 0°)
-      const angleFromStart = START_ANGLE + (360 - angle);
-      const percentage = angleFromStart / TOTAL_ARC_DEGREES;
-      return Math.max(0, Math.min(1, percentage));
+      return (START_ANGLE - angle) / TOTAL_ARC_DEGREES;
     }
-    
-    // Click is outside the arc (in the bottom gap between 34° and 214°)
-    return -1; // Return invalid value
+
+    if (angle >= ARC_END_ANGLE_POSITIVE) {
+      return (START_ANGLE + (360 - angle)) / TOTAL_ARC_DEGREES;
+    }
+
+    return -1;
   }
 
-  private _onSelect(index: number) {
-    const option = THERMOSTAT_MODES[index];
-    if (!option) return;
+  private _onSvgClick(e: MouseEvent) {
+    const p = this._getPercentageFromEvent(e);
+    if (p < 0) return;
 
+    const index =
+      THERMOSTAT_MODES.length - 1 - Math.floor(p * THERMOSTAT_MODES.length);
+
+    const selectedIdx = Math.max(
+      0,
+      Math.min(index, THERMOSTAT_MODES.length - 1),
+    );
+
+    // Émettre l'événement pour que la carte appelle le service
     this.dispatchEvent(
       new CustomEvent("option-selected", {
-        detail: { index, option },
+        detail: { option: THERMOSTAT_MODES[selectedIdx] },
         bubbles: true,
         composed: true,
       }),
     );
   }
 
-  private _onSvgClick(e: MouseEvent) {
-    const percentage = this._getPercentageFromEvent(e);
-    // If percentage is -1, the click was outside the arc
-    if (percentage < 0) return;
-    
-    // Since we reversed the index mapping (index 0 at 100%, index 2 at 0%),
-    // we need to reverse the click mapping too
-    const rawIndex = Math.round(percentage * (THERMOSTAT_MODES.length - 1));
-    const index = THERMOSTAT_MODES.length - 1 - rawIndex;
-    this._onSelect(Math.max(0, Math.min(index, THERMOSTAT_MODES.length - 1)));
-  }
+  /* =======================
+     RENDER
+  ======================= */
 
   protected render() {
+    // Synchroniser selectedIndex avec currentValue
+    const currentIndex = THERMOSTAT_MODES.indexOf(this.currentValue);
+    if (currentIndex !== -1) {
+      this.selectedIndex = currentIndex;
+    }
+
     return html`
       <div class="slider-container">
         <svg viewBox="0 0 200 200" @click=${this._onSvgClick}>
-          <!-- Define text paths for each zone -->
           <defs>
-            ${THERMOSTAT_MODES.map((mode, i) => {
-              const percentage = this._valueToPercentage(i);
-              const nextPercentage = this._valueToPercentage(i + 1);
-              const midPercentage = (percentage + nextPercentage) / 2;
-
-              // Calculate start and end angles for this segment
-              // Arc goes from right (34°) backwards through top to left
-              // So we SUBTRACT the angle offset
-              const startAngle =
-                (START_ANGLE - percentage * TOTAL_ARC_DEGREES) *
-                (Math.PI / 180);
-              const endAngle =
-                (START_ANGLE - nextPercentage * TOTAL_ARC_DEGREES) *
-                (Math.PI / 180);
-
-              // Calculate path for text to follow
-              const startX =
-                CIRCLE_CENTER_X + ARC_RADIUS * Math.cos(startAngle);
-              const startY =
-                CIRCLE_CENTER_Y + ARC_RADIUS * Math.sin(startAngle);
-              const endX = CIRCLE_CENTER_X + ARC_RADIUS * Math.cos(endAngle);
-              const endY = CIRCLE_CENTER_Y + ARC_RADIUS * Math.sin(endAngle);
-
-              // Large arc flag: 0 for arcs < 180°, 1 for arcs >= 180°
-              // Each mode segment spans ~60° (180° / 3), so we use 0
-              const largeArcFlag = 0;
-              // Sweep flag: 0 for counter-clockwise, 1 for clockwise
-              // Use sweep=1 so text follows the arc in a readable direction
-              const sweepFlag = 1;
-
-              const textPath = `M ${startX} ${startY} A ${ARC_RADIUS} ${ARC_RADIUS} 0 ${largeArcFlag} ${sweepFlag} ${endX} ${endY}`;
-
-              return svg`
-                <path
-                  id="textPath-${i}"
-                  d="${textPath}"
-                  fill="none"
-                />
-              `;
-            })}
+            <path id="arcPath" d="${ARC_PATH}" />
           </defs>
 
-          <!-- Background arc (light gray, full width) -->
+          <!-- Arc de fond -->
           ${svg`
             <path
-              class="gauge-background"
               d="${ARC_PATH}"
               fill="none"
               stroke="var(--divider-color, #e0e0e0)"
               stroke-width="${STROKE_WIDTH}"
-              stroke-linecap="butt"
               opacity="0.3"
             />
           `}
 
-          <!-- Segments for each mode - only show the active one colored -->
-          ${(() => {
-            const activeIndex = THERMOSTAT_MODES.findIndex(
-              (mode) => mode === this.currentValue,
-            );
-            if (activeIndex === -1) return svg``;
+          <!-- Segment sélectionné (BLEU) -->
+          ${this.selectedIndex !== -1
+            ? (() => {
+                const [dasharray, dashoffset] = this._strokeDashArc(
+                  this.selectedIndex,
+                  this.selectedIndex + 1,
+                );
 
-            const [dasharray, dashoffset] = this._strokeDashArc(
-              activeIndex,
-              activeIndex + 1,
-            );
+                return svg`
+                  <path
+                    d="${ARC_PATH}"
+                    fill="none"
+                    stroke="var(--primary-color, #3b82f6)"
+                    stroke-width="${STROKE_WIDTH}"
+                    stroke-dasharray="${dasharray}"
+                    stroke-dashoffset="${dashoffset}"
+                    stroke-linecap="butt"
+                  />
+                `;
+              })()
+            : null}
 
-            return svg`
-              <path
-                class="gauge-segment active"
-                d="${ARC_PATH}"
-                fill="none"
-                stroke="var(--primary-color, #3b82f6)"
-                stroke-width="${STROKE_WIDTH}"
-                stroke-linecap="butt"
-                stroke-dasharray="${dasharray}"
-                stroke-dashoffset="${dashoffset}"
-                opacity="1"
-                style="cursor: pointer; transition: opacity 0.2s, stroke 0.2s;"
-              />
-            `;
-          })()}
-
-          <!-- Clickable areas for each zone (invisible overlay) -->
-          ${THERMOSTAT_MODES.map((mode, i) => {
+          <!-- Zones cliquables -->
+          ${THERMOSTAT_MODES.map((_, i) => {
             const [dasharray, dashoffset] = this._strokeDashArc(i, i + 1);
 
             return svg`
@@ -219,34 +156,49 @@ export class DayModeCircularSlider extends LitElement {
                 fill="none"
                 stroke="transparent"
                 stroke-width="${STROKE_WIDTH + CLICK_AREA_PADDING}"
-                stroke-linecap="butt"
                 stroke-dasharray="${dasharray}"
                 stroke-dashoffset="${dashoffset}"
                 style="cursor: pointer;"
                 @click=${(e: Event) => {
                   e.stopPropagation();
-                  this._onSelect(i);
+                  this.dispatchEvent(
+                    new CustomEvent("option-selected", {
+                      detail: { option: THERMOSTAT_MODES[i] },
+                      bubbles: true,
+                      composed: true,
+                    }),
+                  );
                 }}
               />
             `;
           })}
 
-          <!-- Curved text labels on the arc -->
+          <!-- Textes -->
           ${THERMOSTAT_MODES.map((mode, i) => {
+            const startOffset = ((i + 0.5) / THERMOSTAT_MODES.length) * 100;
+
             return svg`
               <text
-                fill="var(--primary-text-color)"
                 font-size="12"
                 font-weight="600"
+                fill="var(--primary-text-color)"
+                text-anchor="middle"
+                dominant-baseline="middle"
                 style="cursor: pointer; user-select: none;"
                 @click=${(e: Event) => {
                   e.stopPropagation();
-                  this._onSelect(i);
+                  this.dispatchEvent(
+                    new CustomEvent("option-selected", {
+                      detail: { option: mode },
+                      bubbles: true,
+                      composed: true,
+                    }),
+                  );
                 }}
               >
                 <textPath
-                  href="#textPath-${i}"
-                  startOffset="50%"
+                  href="#arcPath"
+                  startOffset="${startOffset}%"
                   text-anchor="middle"
                 >
                   ${mode}
@@ -266,18 +218,14 @@ export class DayModeCircularSlider extends LitElement {
 
     .slider-container {
       display: flex;
-      align-items: center;
       justify-content: center;
-      width: 100%;
       padding: 20px 0;
     }
 
     svg {
       width: 100%;
       max-width: 280px;
-      height: auto;
       aspect-ratio: 1;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
   `;
 }
