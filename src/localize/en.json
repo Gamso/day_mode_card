@@ -1,8 +1,6 @@
 {
   "card": {
-    "title": "Modes",
-    "mode_jour": "Day mode",
-    "mode_thermostat": "Thermostat mode",
+    "title": "Thermostat",
     "entity_not_found": "Entity not found: {entity}",
     "off": "Off"
   }

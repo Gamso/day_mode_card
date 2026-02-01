@@ -1,8 +1,6 @@
 {
   "card": {
-    "title": "Modes",
-    "mode_jour": "Mode jour",
-    "mode_thermostat": "Mode thermostat",
+    "title": "Thermostat",
     "entity_not_found": "Entité introuvable: {entity}",
     "off": "Éteint"
   }

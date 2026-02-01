@@ -12,10 +12,11 @@ interface DayModeCardConfig {
 class DayModeCard extends LitElement {
   @property({ attribute: false }) public hass!: any;
   @state() private _config!: DayModeCardConfig;
+  @state() private _showScheduler = false;
 
   public static getStubConfig(): DayModeCardConfig {
     return {
-      name: "Modes",
+      name: "Thermostat",
       mode_jour_entity: "input_select.mode_jour",
       mode_thermostat_entity: "input_select.mode_thermostat",
     };
@@ -26,7 +27,7 @@ class DayModeCard extends LitElement {
       throw new Error("Configuration manquante");
     }
     this._config = {
-      name: config.name ?? "Modes",
+      name: config.name ?? "Thermostat",
       mode_jour_entity: config.mode_jour_entity ?? "input_select.mode_jour",
       mode_thermostat_entity:
         config.mode_thermostat_entity ?? "input_select.mode_thermostat",
@@ -62,76 +63,101 @@ class DayModeCard extends LitElement {
     });
   }
 
+  private _renderScheduler(currentTag: string) {
+    const schedulerConfig = {
+      type: "custom:scheduler-card",
+      title: false,
+      tags: currentTag, // Filtre par le mode jour sélectionné (Maison, Travail, etc.)
+      display_options: {
+        primary_info: ["<i><b><font color=orange>{name}</style></b></i>"],
+        secondary_info: [
+          "<i><b>Prochain lancement</b></i>{relative-time}",
+          "<i><b>Planification</b></i> {days}",
+          "additional-tasks",
+        ],
+        icon: "entity",
+      },
+      sort_by: ["title"],
+      discover_existing: false,
+      show_header_toggle: false,
+      time_step: 5,
+    };
+
+    return html`
+      <div class="scheduler-view">
+        <div class="scheduler-header">
+          <span>Planning : <b>${currentTag}</b></span>
+        </div>
+        <hui-card .hass=${this.hass} .config=${schedulerConfig}></hui-card>
+      </div>
+    `;
+  }
+
+  private _renderMain(thermo: any, jour: any, jourOptions: string[]) {
+    return html`
+      <div class="thermo-section">
+        <day-mode-circular-slider
+          .hass=${this.hass}
+          .entityId=${thermo.entity_id}
+          .currentValue=${thermo.state}
+          @option-selected=${(e: any) =>
+            this.onCircularSliderSelect(thermo.entity_id, e.detail.option)}
+        ></day-mode-circular-slider>
+
+        <div class="thermo-bottom">
+          <button
+            class="off-button ${["Eteint", "off"].includes(thermo.state)
+              ? "active"
+              : ""}"
+            @click=${() => this.onOffButtonClick(thermo.entity_id)}
+          >
+            <ha-icon icon="mdi:power"></ha-icon>
+          </button>
+
+          <div class="jour-section">
+            <select @change=${(e: Event) => this.onSelect(jour.entity_id, e)}>
+              ${jourOptions.map(
+                (opt) =>
+                  html`<option value="${opt}" ?selected=${opt === jour.state}>
+                    ${opt}
+                  </option> `,
+              )}
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   protected render() {
     if (!this.hass || !this._config) return nothing;
+
     const jour = this.getEntityState(this._config.mode_jour_entity);
     const thermo = this.getEntityState(this._config.mode_thermostat_entity);
-
-    const jourOptions: string[] = jour?.attributes?.options ?? [];
-    const thermoOptions: string[] = thermo?.attributes?.options ?? [];
-
     const title = this._config.name ?? localize(this.hass, "card.title");
+
+    if (!thermo || !jour)
+      return html`<div class="error">Entités introuvables</div>`;
 
     return html`
       <ha-card header="${title}">
-        <div class="grid">
-          <div class="item">
-            <div class="label">${localize(this.hass, "card.mode_jour")}</div>
-            ${jour
-              ? html`<select
-                  @change=${(e: Event) => this.onSelect(jour.entity_id, e)}
-                >
-                  ${jourOptions.map(
-                    (opt) =>
-                      html`<option
-                        value="${opt}"
-                        ?selected=${opt === jour.state}
-                      >
-                        ${opt}
-                      </option>`,
-                  )}
-                </select>`
-              : html`<div class="error">
-                  ${localize(this.hass, "card.entity_not_found", {
-                    entity: String(this._config.mode_jour_entity),
-                  })}
-                </div>`}
-          </div>
+        <div class="card-header-container">
+          <ha-icon-button
+            class="menu-toggle"
+            @click=${() => {
+              this._showScheduler = !this._showScheduler;
+            }}
+          >
+            <ha-icon
+              icon="${this._showScheduler ? "mdi:close" : "mdi:dots-vertical"}"
+            ></ha-icon>
+          </ha-icon-button>
+        </div>
 
-          <div class="item thermo-item">
-            <div class="label">
-              ${localize(this.hass, "card.mode_thermostat")}
-            </div>
-            ${thermo
-              ? html`
-                  <day-mode-circular-slider
-                    .hass=${this.hass}
-                    .entityId=${thermo.entity_id}
-                    .currentValue=${thermo.state}
-                    @option-selected=${(e: any) =>
-                      this.onCircularSliderSelect(
-                        thermo.entity_id,
-                        e.detail.option,
-                      )}
-                  ></day-mode-circular-slider>
-                  <div class="thermo-controls">
-                    <button
-                      class="off-button ${thermo.state === "off"
-                        ? "active"
-                        : ""}"
-                      @click=${() => this.onOffButtonClick(thermo.entity_id)}
-                      title="${localize(this.hass, "card.off")}"
-                    >
-                      <ha-icon icon="mdi:power"></ha-icon>
-                    </button>
-                  </div>
-                `
-              : html`<div class="error">
-                  ${localize(this.hass, "card.entity_not_found", {
-                    entity: String(this._config.mode_thermostat_entity),
-                  })}
-                </div>`}
-          </div>
+        <div class="container">
+          ${this._showScheduler
+            ? this._renderScheduler(jour.state)
+            : this._renderMain(thermo, jour, jour.attributes?.options ?? [])}
         </div>
       </ha-card>
     `;
@@ -139,22 +165,105 @@ class DayModeCard extends LitElement {
 
   static styles = css`
     ha-card {
-      padding: 12px;
+      padding: 16px;
+      position: relative;
+      min-height: 320px;
+      text-align: center;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      align-items: start;
+
+    .card-header-container {
+      position: absolute;
+      top: 8px;
+      right: 8px;
     }
-    .item {
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--primary-text-color);
+    }
+
+    .menu-toggle {
+      color: var(--secondary-text-color);
+      /* On définit une taille fixe pour le bouton */
+      --mdc-icon-button-size: 40px;
+
+      /* Force le centrage de l'icône à l'intérieur du bouton */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      /* Ajustement pour l'alignement dans le header absolu */
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Optionnel : Si l'icône semble encore décalée d'un pixel */
+    .menu-toggle ha-icon {
+      display: flex;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* VUE SLIDER */
+    .thermo-section {
+      position: relative;
+      width: 100%;
+      max-width: 280px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
     }
-    .label {
-      font-weight: 600;
+
+    day-mode-circular-slider {
+      width: 100%;
     }
+
+    .thermo-bottom {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 2;
+    }
+
+    /* VUE SCHEDULER */
+    .scheduler-view {
+      width: 100%;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .scheduler-header {
+      text-align: left;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--secondary-text-color);
+    }
+
+    hui-card {
+      --ha-card-box-shadow: none;
+      --ha-card-border-width: 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ÉLÉMENTS UI */
     select {
       padding: 8px;
       border-radius: 6px;
@@ -162,25 +271,12 @@ class DayModeCard extends LitElement {
       background: var(--card-background-color);
       color: var(--primary-text-color);
     }
-    .error {
-      color: var(--error-color);
-    }
-
-    .thermo-item {
-      align-items: center;
-    }
-
-    .thermo-controls {
-      display: flex;
-      justify-content: center;
-      margin-top: 12px;
-    }
 
     .off-button {
       width: 40px;
       height: 40px;
-      border: none;
       border-radius: 50%;
+      border: 1px solid var(--divider-color, #ccc);
       background: var(--card-background-color);
       color: var(--disabled-text-color);
       cursor: pointer;
@@ -188,26 +284,17 @@ class DayModeCard extends LitElement {
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
-      flex-shrink: 0;
-      padding: 0;
-      margin: 0;
-      border: 1px solid var(--divider-color, #ccc);
-    }
-
-    .off-button:hover:not(:disabled) {
-      border-color: var(--primary-color, #3b82f6);
-      opacity: 0.8;
-      transform: scale(1.1);
-    }
-
-    .off-button:active:not(:disabled) {
-      transform: scale(0.95);
     }
 
     .off-button.active {
       background: var(--primary-color, #3b82f6);
-      color: var(--text-primary-color, white);
-      border-color: var(--primary-color, #3b82f6);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .error {
+      color: var(--error-color);
+      padding: 16px;
     }
   `;
 }
