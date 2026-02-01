@@ -71,7 +71,7 @@ class DayModeCard extends LitElement {
     const schedulerConfig = {
       type: "custom:scheduler-card",
       title: false,
-      tags: currentTag, // Filtre par le mode jour sélectionné (Maison, Travail, etc.)
+      tags: currentTag, // Filter by selected day mode (Home, Work, etc.)
       display_options: {
         primary_info: ["<i><b><font color=orange>{name}</style></b></i>"],
         secondary_info: [
@@ -189,20 +189,20 @@ class DayModeCard extends LitElement {
 
     .menu-toggle {
       color: var(--secondary-text-color);
-      /* On définit une taille fixe pour le bouton */
+      /* Set a fixed size for the button */
       --mdc-icon-button-size: 40px;
 
-      /* Force le centrage de l'icône à l'intérieur du bouton */
+      /* Force icon centering inside the button */
       display: inline-flex;
       align-items: center;
       justify-content: center;
 
-      /* Ajustement pour l'alignement dans le header absolu */
+      /* Tweak alignment inside the absolute header */
       padding: 0;
       margin: 0;
     }
 
-    /* Optionnel : Si l'icône semble encore décalée d'un pixel */
+    /* Optional: if the icon still looks off by a pixel */
     .menu-toggle ha-icon {
       display: flex;
     }
@@ -213,7 +213,7 @@ class DayModeCard extends LitElement {
       width: 100%;
     }
 
-    /* VUE SLIDER */
+    /* SLIDER VIEW */
     .thermo-section {
       position: relative;
       width: 100%;
@@ -238,7 +238,7 @@ class DayModeCard extends LitElement {
       z-index: 2;
     }
 
-    /* VUE SCHEDULER */
+    /* SCHEDULER VIEW */
     .scheduler-view {
       width: 100%;
       animation: fadeIn 0.3s ease-out;
@@ -267,7 +267,7 @@ class DayModeCard extends LitElement {
       }
     }
 
-    /* ÉLÉMENTS UI */
+    /* UI ELEMENTS */
     select {
       padding: 8px;
       border-radius: 6px;

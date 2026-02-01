@@ -7,14 +7,13 @@ import { property, query } from "lit/decorators.js";
 
 const THERMOSTAT_MODES = ["Chauffage", "Climatisation", "Ventilation"];
 
-const ARC_RADIUS = 85;
 const STROKE_WIDTH = 25;
 const CLICK_AREA_PADDING = 10;
 
-// Arc 180° (ouverture en bas)
+// 180° arc (opening at the bottom)
 const ARC_PATH = "M 30 150 A 85 85 0 1 1 170 150";
 
-// Angles pour le calcul clic
+// Angles used for click calculations
 const START_ANGLE = 34.2;
 const TOTAL_ARC_DEGREES = 180;
 const ARC_END_ANGLE = START_ANGLE - TOTAL_ARC_DEGREES;
@@ -36,20 +35,20 @@ export class DayModeCircularSlider extends LitElement {
   ======================= */
 
   private _valueToPercentage(index: number): number {
-    // On divise par la longueur totale pour avoir des segments égaux (1/3 chacun)
-    // On retire le "1 - ..." pour que ça aille de gauche à droite (0 -> 1)
+    // Divide by total length to get equal segments (1/3 each)
+    // Keep left-to-right mapping (0 -> 1)
     return index / THERMOSTAT_MODES.length;
   }
 
-  // On génère le dasharray pour une longueur totale de 1 (grâce à pathLength="1")
+  // Build dasharray for a total length of 1 (via pathLength="1")
   private _strokeDashArc(fromIndex: number, toIndex: number): [string, string] {
-    const start = this._valueToPercentage(fromIndex); // Ex: 0.33
-    const end = this._valueToPercentage(toIndex); // Ex: 0.66
+    const start = this._valueToPercentage(fromIndex); // e.g. 0.33
+    const end = this._valueToPercentage(toIndex); // e.g. 0.66
 
-    const length = end - start; // La taille du segment (ex: 0.33)
+    const length = end - start; // Segment length (e.g. 0.33)
 
-    // Dasharray: "longueur_segment  grand_espace"
-    // Dashoffset: "-point_de_départ" (le négatif décale le tracé vers la droite)
+    // Dasharray: "segment_length  large_gap"
+    // Dashoffset: "-start_point" (negative shifts the stroke to the right)
     return [`${length} 10`, `-${start}`];
   }
 
@@ -77,8 +76,8 @@ export class DayModeCircularSlider extends LitElement {
     const p = this._getPercentageFromEvent(e);
     if (p < 0) return;
 
-    // Suppression de l'inversion "length - 1 - ..."
-    // On mappe directement le pourcentage (0 à 1) vers l'index (0, 1, 2)
+    // Removed the "length - 1 - ..." inversion
+    // Map percentage (0 to 1) directly to index (0, 1, 2)
     const index = Math.floor(p * THERMOSTAT_MODES.length);
 
     const selectedIdx = Math.max(
@@ -100,8 +99,8 @@ export class DayModeCircularSlider extends LitElement {
   ======================= */
 
   protected render() {
-    // Synchroniser selectedIndex avec currentValue
-    // Si currentValue est "Eteint" ou "off", on désélectionne tout (selectedIndex = -1)
+    // Sync selectedIndex with currentValue
+    // If currentValue is "Eteint" or "off", clear selection (selectedIndex = -1)
     let currentIndex = -1;
     if (this.currentValue && !["Eteint", "off"].includes(this.currentValue)) {
       currentIndex = THERMOSTAT_MODES.indexOf(this.currentValue);
@@ -176,7 +175,7 @@ export class DayModeCircularSlider extends LitElement {
             `;
           })}
           ${THERMOSTAT_MODES.map((mode, i) => {
-            // Calculer la position du centre du segment (pas simplement i + 0.5)
+            // Compute the center position of the segment (not just i + 0.5)
             const segmentStart = this._valueToPercentage(i);
             const segmentEnd = this._valueToPercentage(i + 1);
             const segmentCenter = (segmentStart + segmentEnd) / 2;
