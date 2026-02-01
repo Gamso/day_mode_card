@@ -56,16 +56,15 @@ echo "📦 Installing scheduler-component..."
 SCHEDULER_COMPONENT_VERSION="v3.3.8"
 SCHEDULER_COMPONENT_URL="https://github.com/nielsfaber/scheduler-component/releases/download/${SCHEDULER_COMPONENT_VERSION}/scheduler.zip"
 
-if ! command -v wget &> /dev/null; then
-    echo "   Installing wget..."
-    apk add --no-cache wget unzip > /dev/null 2>&1
-fi
-
 if [ ! -d /config/custom_components/scheduler ]; then
-    echo "   Downloading scheduler-component ${SCHEDULER_COMPONENT_VERSION}..."
-    wget -q ${SCHEDULER_COMPONENT_URL} -O /tmp/scheduler.zip
+    # Install wget and unzip if not available
+    if ! command -v wget &> /dev/null || ! command -v unzip &> /dev/null; then
+        echo "   Installing wget and unzip..."
+        apk add --no-cache wget unzip > /dev/null 2>&1
+    fi
     
-    if [ $? -eq 0 ]; then
+    echo "   Downloading scheduler-component ${SCHEDULER_COMPONENT_VERSION}..."
+    if wget -q ${SCHEDULER_COMPONENT_URL} -O /tmp/scheduler.zip; then
         echo "   Extracting scheduler component..."
         unzip -q /tmp/scheduler.zip -d /config/custom_components/
         rm /tmp/scheduler.zip
@@ -83,10 +82,14 @@ SCHEDULER_CARD_VERSION="v4.0.11"
 SCHEDULER_CARD_URL="https://github.com/nielsfaber/scheduler-card/releases/download/${SCHEDULER_CARD_VERSION}/scheduler-card.js"
 
 if [ ! -f /config/www/scheduler-card/scheduler-card.js ]; then
-    echo "   Downloading scheduler-card ${SCHEDULER_CARD_VERSION}..."
-    wget -q ${SCHEDULER_CARD_URL} -O /config/www/scheduler-card/scheduler-card.js
+    # Install wget if not available
+    if ! command -v wget &> /dev/null; then
+        echo "   Installing wget..."
+        apk add --no-cache wget > /dev/null 2>&1
+    fi
     
-    if [ $? -eq 0 ]; then
+    echo "   Downloading scheduler-card ${SCHEDULER_CARD_VERSION}..."
+    if wget -q ${SCHEDULER_CARD_URL} -O /config/www/scheduler-card/scheduler-card.js; then
         echo "   ✅ Scheduler card installed!"
     else
         echo "   ⚠️  Failed to download scheduler card"
