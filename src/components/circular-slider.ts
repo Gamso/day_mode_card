@@ -39,8 +39,9 @@ export class DayModeCircularSlider extends LitElement {
   ======================= */
 
   private _valueToPercentage(index: number): number {
-    const max = THERMOSTAT_MODES.length - 1;
-    return max <= 0 ? 0 : 1 - index / max;
+    // On divise par la longueur totale pour avoir des segments égaux (1/3 chacun)
+    // On retire le "1 - ..." pour que ça aille de gauche à droite (0 -> 1)
+    return index / THERMOSTAT_MODES.length;
   }
 
   private _strokeDashArc(fromIndex: number, toIndex: number): [string, string] {
@@ -77,15 +78,15 @@ export class DayModeCircularSlider extends LitElement {
     const p = this._getPercentageFromEvent(e);
     if (p < 0) return;
 
-    const index =
-      THERMOSTAT_MODES.length - 1 - Math.floor(p * THERMOSTAT_MODES.length);
+    // Suppression de l'inversion "length - 1 - ..."
+    // On mappe directement le pourcentage (0 à 1) vers l'index (0, 1, 2)
+    const index = Math.floor(p * THERMOSTAT_MODES.length);
 
     const selectedIdx = Math.max(
       0,
       Math.min(index, THERMOSTAT_MODES.length - 1),
     );
 
-    // Émettre l'événement pour que la carte appelle le service
     this.dispatchEvent(
       new CustomEvent("option-selected", {
         detail: { option: THERMOSTAT_MODES[selectedIdx] },
