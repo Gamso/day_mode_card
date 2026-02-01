@@ -48,11 +48,33 @@ L'environnement de test inclut automatiquement:
 
 Ces composants sont automatiquement téléchargés et installés lors de la première initialisation du conteneur.
 
+### ⚠️ IMPORTANT: Configuration Requise
+
+**L'intégration Scheduler doit être ajoutée manuellement via l'interface Home Assistant:**
+
+1. Attendre que Home Assistant soit complètement démarré (1-2 minutes)
+2. Compléter l'onboarding (créer un compte admin/admin si nécessaire)
+3. Aller dans **Paramètres** → **Appareils et Services**
+4. Cliquer sur **+ Ajouter une intégration**
+5. Rechercher **"Scheduler"** et cliquer pour l'ajouter
+6. L'intégration sera alors configurée et fonctionnelle
+
 ### Utilisation du Scheduler
+
+Une fois l'intégration ajoutée:
 
 1. Accéder à l'onglet "Scheduler" dans le dashboard
 2. Utiliser la carte scheduler-card pour créer des planifications
 3. Sélectionner les entités `input_boolean.test_switch` ou `input_boolean.test_light` pour tester
+
+### Dépannage
+
+Si l'intégration "Scheduler" n'apparaît pas dans la liste:
+- Vérifier que Home Assistant est complètement démarré (voir les logs)
+- Rafraîchir le navigateur (Ctrl+F5)
+- Vider le cache du navigateur et recharger
+- Redémarrer Home Assistant: **Paramètres** → **Système** → **Redémarrer**
+- Vérifier que les fichiers sont dans `/config/custom_components/scheduler/`
 
 ## Debug
 

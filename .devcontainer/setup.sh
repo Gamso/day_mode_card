@@ -68,12 +68,28 @@ if [ ! -d /config/custom_components/scheduler ]; then
         echo "   Extracting scheduler component..."
         unzip -q /tmp/scheduler.zip -d /config/custom_components/
         rm /tmp/scheduler.zip
-        echo "   ✅ Scheduler component installed!"
+        
+        # Verify installation
+        if [ -f /config/custom_components/scheduler/manifest.json ]; then
+            echo "   ✅ Scheduler component installed successfully!"
+            echo "   📁 Location: /config/custom_components/scheduler/"
+        else
+            echo "   ⚠️  Warning: scheduler component extracted but manifest.json not found"
+            echo "   Checking what was extracted..."
+            ls -la /config/custom_components/ || true
+        fi
     else
         echo "   ⚠️  Failed to download scheduler component"
     fi
 else
     echo "   ✅ Scheduler component already installed"
+    echo "   📁 Location: /config/custom_components/scheduler/"
+    # Verify it's properly installed
+    if [ -f /config/custom_components/scheduler/manifest.json ]; then
+        echo "   ✓ manifest.json found"
+    else
+        echo "   ⚠️  Warning: manifest.json not found in scheduler directory"
+    fi
 fi
 
 echo ""
@@ -134,6 +150,19 @@ echo "   3. Complete onboarding (create account: admin / admin)"
 echo "   4. Enable Advanced Mode: Profile (bottom left) → Enable Advanced Mode"
 echo "   5. Go to: Overview dashboard"
 echo "   6. The card is pre-configured in the dashboard!"
+echo ""
+echo "📅 Scheduler Integration:"
+echo "   IMPORTANT: The Scheduler integration must be added after Home Assistant starts:"
+echo "   1. Wait for Home Assistant to fully start and complete onboarding"
+echo "   2. Go to: Settings → Devices & Services → Add Integration"
+echo "   3. Search for 'Scheduler' and click to add it"
+echo "   4. Once added, the scheduler-card in the 'Scheduler' tab will work"
+echo "   "
+echo "   If 'Scheduler' doesn't appear in integrations list:"
+echo "   - Make sure Home Assistant has fully started (check logs)"
+echo "   - Try refreshing the browser (Ctrl+F5)"
+echo "   - Clear browser cache and reload"
+echo "   - Restart Home Assistant: Settings → System → Restart"
 echo ""
 echo "   Alternative: Manually add via UI:"
 echo "   - Click the 3 dots (top right) → Edit Dashboard → Add Card"
