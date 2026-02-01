@@ -173,7 +173,12 @@ export class DayModeCircularSlider extends LitElement {
             `;
           })}
           ${THERMOSTAT_MODES.map((mode, i) => {
-            const startOffset = ((i + 0.5) / THERMOSTAT_MODES.length) * 100;
+            // Calculer la position du centre du segment (pas simplement i + 0.5)
+            const segmentStart = this._valueToPercentage(i);
+            const segmentEnd = this._valueToPercentage(i + 1);
+            const segmentCenter = (segmentStart + segmentEnd) / 2;
+            const startOffset = segmentCenter * 100;
+
             return svg`
               <text
                 font-size="12"
@@ -183,7 +188,14 @@ export class DayModeCircularSlider extends LitElement {
                 dominant-baseline="middle"
                 style="cursor: pointer; user-select: none;"
                 @click=${(e: Event) => {
-                  /* ... event logic ... */
+                  e.stopPropagation();
+                  this.dispatchEvent(
+                    new CustomEvent("option-selected", {
+                      detail: { option: mode },
+                      bubbles: true,
+                      composed: true,
+                    }),
+                  );
                 }}
               >
                 <textPath href="#arcPath" startOffset="${startOffset}%" text-anchor="middle">

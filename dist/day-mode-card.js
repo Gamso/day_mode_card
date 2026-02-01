@@ -15,7 +15,7 @@ const e=globalThis,s=e.ShadowRoot&&(void 0===e.ShadyCSS||e.ShadyCSS.nativeShadow
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const E=globalThis,S=t=>t,w=E.trustedTypes,x=w?w.createPolicy("lit-html",{createHTML:t=>t}):void 0,C="$lit$",P=`lit$${Math.random().toFixed(9).slice(2)}$`,M="?"+P,O=`<${M}>`,k=document,U=()=>k.createComment(""),T=t=>null===t||"object"!=typeof t&&"function"!=typeof t,j=Array.isArray,R="[ \t\n\f\r]",H=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,N=/-->/g,D=/>/g,I=RegExp(`>|${R}(?:([^\\s"'>=/]+)(${R}*=${R}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),B=/'/g,L=/"/g,z=/^(?:script|style|textarea|title)$/i,q=t=>(e,...s)=>({_$litType$:t,strings:e,values:s}),V=q(1),W=q(2),F=Symbol.for("lit-noChange"),Z=Symbol.for("lit-nothing"),J=new WeakMap,K=k.createTreeWalker(k,129);function X(t,e){if(!j(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const Y=(t,e)=>{const s=t.length-1,i=[];let o,r=2===e?"<svg>":3===e?"<math>":"",n=H;for(let e=0;e<s;e++){const s=t[e];let a,h,c=-1,l=0;for(;l<s.length&&(n.lastIndex=l,h=n.exec(s),null!==h);)l=n.lastIndex,n===H?"!--"===h[1]?n=N:void 0!==h[1]?n=D:void 0!==h[2]?(z.test(h[2])&&(o=RegExp("</"+h[2],"g")),n=I):void 0!==h[3]&&(n=I):n===I?">"===h[0]?(n=o??H,c=-1):void 0===h[1]?c=-2:(c=n.lastIndex-h[2].length,a=h[1],n=void 0===h[3]?I:'"'===h[3]?L:B):n===L||n===B?n=I:n===N||n===D?n=H:(n=I,o=void 0);const d=n===I&&t[e+1].startsWith("/>")?" ":"";r+=n===H?s+O:c>=0?(i.push(a),s.slice(0,c)+C+s.slice(c)+P+d):s+P+(-2===c?e:d)}return[X(t,r+(t[s]||"<?>")+(2===e?"</svg>":3===e?"</math>":"")),i]};class G{constructor({strings:t,_$litType$:e},s){let i;this.parts=[];let o=0,r=0;const n=t.length-1,a=this.parts,[h,c]=Y(t,e);if(this.el=G.createElement(h,s),K.currentNode=this.el.content,2===e||3===e){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes)}for(;null!==(i=K.nextNode())&&a.length<n;){if(1===i.nodeType){if(i.hasAttributes())for(const t of i.getAttributeNames())if(t.endsWith(C)){const e=c[r++],s=i.getAttribute(t).split(P),n=/([.?@])?(.*)/.exec(e);a.push({type:1,index:o,name:n[2],strings:s,ctor:"."===n[1]?it:"?"===n[1]?ot:"@"===n[1]?rt:st}),i.removeAttribute(t)}else t.startsWith(P)&&(a.push({type:6,index:o}),i.removeAttribute(t));if(z.test(i.tagName)){const t=i.textContent.split(P),e=t.length-1;if(e>0){i.textContent=w?w.emptyScript:"";for(let s=0;s<e;s++)i.append(t[s],U()),K.nextNode(),a.push({type:2,index:++o});i.append(t[e],U())}}}else if(8===i.nodeType)if(i.data===M)a.push({type:2,index:o});else{let t=-1;for(;-1!==(t=i.data.indexOf(P,t+1));)a.push({type:7,index:o}),t+=P.length-1}o++}}static createElement(t,e){const s=k.createElement("template");return s.innerHTML=t,s}}function Q(t,e,s=t,i){if(e===F)return e;let o=void 0!==i?s._$Co?.[i]:s._$Cl;const r=T(e)?void 0:e._$litDirective$;return o?.constructor!==r&&(o?._$AO?.(!1),void 0===r?o=void 0:(o=new r(t),o._$AT(t,s,i)),void 0!==i?(s._$Co??=[])[i]=o:s._$Cl=o),void 0!==o&&(e=Q(t,o._$AS(t,e.values),o,i)),e}class tt{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:e},parts:s}=this._$AD,i=(t?.creationScope??k).importNode(e,!0);K.currentNode=i;let o=K.nextNode(),r=0,n=0,a=s[0];for(;void 0!==a;){if(r===a.index){let e;2===a.type?e=new et(o,o.nextSibling,this,t):1===a.type?e=new a.ctor(o,a.name,a.strings,this,t):6===a.type&&(e=new nt(o,this,t)),this._$AV.push(e),a=s[++n]}r!==a?.index&&(o=K.nextNode(),r++)}return K.currentNode=k,i}p(t){let e=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,e),e+=s.strings.length-2):s._$AI(t[e])),e++}}class et{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,e,s,i){this.type=2,this._$AH=Z,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=s,this.options=i,this._$Cv=i?.isConnected??!0}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===t?.nodeType&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=Q(this,t,e),T(t)?t===Z||null==t||""===t?(this._$AH!==Z&&this._$AR(),this._$AH=Z):t!==this._$AH&&t!==F&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):(t=>j(t)||"function"==typeof t?.[Symbol.iterator])(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==Z&&T(this._$AH)?this._$AA.nextSibling.data=t:this.T(k.createTextNode(t)),this._$AH=t}$(t){const{values:e,_$litType$:s}=t,i="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=G.createElement(X(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===i)this._$AH.p(e);else{const t=new tt(i,this),s=t.u(this.options);t.p(e),this.T(s),this._$AH=t}}_$AC(t){let e=J.get(t.strings);return void 0===e&&J.set(t.strings,e=new G(t)),e}k(t){j(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let s,i=0;for(const o of t)i===e.length?e.push(s=new et(this.O(U()),this.O(U()),this,this.options)):s=e[i],s._$AI(o),i++;i<e.length&&(this._$AR(s&&s._$AB.nextSibling,i),e.length=i)}_$AR(t=this._$AA.nextSibling,e){for(this._$AP?.(!1,!0,e);t!==this._$AB;){const e=S(t).nextSibling;S(t).remove(),t=e}}setConnected(t){void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t))}}class st{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,s,i,o){this.type=1,this._$AH=Z,this._$AN=void 0,this.element=t,this.name=e,this._$AM=i,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=Z}_$AI(t,e=this,s,i){const o=this.strings;let r=!1;if(void 0===o)t=Q(this,t,e,0),r=!T(t)||t!==this._$AH&&t!==F,r&&(this._$AH=t);else{const i=t;let n,a;for(t=o[0],n=0;n<o.length-1;n++)a=Q(this,i[s+n],e,n),a===F&&(a=this._$AH[n]),r||=!T(a)||a!==this._$AH[n],a===Z?t=Z:t!==Z&&(t+=(a??"")+o[n+1]),this._$AH[n]=a}r&&!i&&this.j(t)}j(t){t===Z?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}}class it extends st{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===Z?void 0:t}}class ot extends st{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==Z)}}class rt extends st{constructor(t,e,s,i,o){super(t,e,s,i,o),this.type=5}_$AI(t,e=this){if((t=Q(this,t,e,0)??Z)===F)return;const s=this._$AH,i=t===Z&&s!==Z||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,o=t!==Z&&(s===Z||i);i&&this.element.removeEventListener(this.name,this,s),o&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t)}}class nt{constructor(t,e,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=s}get _$AU(){return this._$AM._$AU}_$AI(t){Q(this,t)}}const at=E.litHtmlPolyfillSupport;at?.(G,et),(E.litHtmlVersions??=[]).push("3.3.2");const ht=globalThis;
+const E=globalThis,S=t=>t,w=E.trustedTypes,x=w?w.createPolicy("lit-html",{createHTML:t=>t}):void 0,C="$lit$",P=`lit$${Math.random().toFixed(9).slice(2)}$`,O="?"+P,k=`<${O}>`,M=document,U=()=>M.createComment(""),T=t=>null===t||"object"!=typeof t&&"function"!=typeof t,j=Array.isArray,R="[ \t\n\f\r]",H=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,N=/-->/g,D=/>/g,I=RegExp(`>|${R}(?:([^\\s"'>=/]+)(${R}*=${R}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),L=/'/g,B=/"/g,z=/^(?:script|style|textarea|title)$/i,V=t=>(e,...s)=>({_$litType$:t,strings:e,values:s}),q=V(1),W=V(2),F=Symbol.for("lit-noChange"),J=Symbol.for("lit-nothing"),K=new WeakMap,Z=M.createTreeWalker(M,129);function X(t,e){if(!j(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==x?x.createHTML(e):e}const Y=(t,e)=>{const s=t.length-1,i=[];let o,r=2===e?"<svg>":3===e?"<math>":"",n=H;for(let e=0;e<s;e++){const s=t[e];let a,h,c=-1,l=0;for(;l<s.length&&(n.lastIndex=l,h=n.exec(s),null!==h);)l=n.lastIndex,n===H?"!--"===h[1]?n=N:void 0!==h[1]?n=D:void 0!==h[2]?(z.test(h[2])&&(o=RegExp("</"+h[2],"g")),n=I):void 0!==h[3]&&(n=I):n===I?">"===h[0]?(n=o??H,c=-1):void 0===h[1]?c=-2:(c=n.lastIndex-h[2].length,a=h[1],n=void 0===h[3]?I:'"'===h[3]?B:L):n===B||n===L?n=I:n===N||n===D?n=H:(n=I,o=void 0);const d=n===I&&t[e+1].startsWith("/>")?" ":"";r+=n===H?s+k:c>=0?(i.push(a),s.slice(0,c)+C+s.slice(c)+P+d):s+P+(-2===c?e:d)}return[X(t,r+(t[s]||"<?>")+(2===e?"</svg>":3===e?"</math>":"")),i]};class G{constructor({strings:t,_$litType$:e},s){let i;this.parts=[];let o=0,r=0;const n=t.length-1,a=this.parts,[h,c]=Y(t,e);if(this.el=G.createElement(h,s),Z.currentNode=this.el.content,2===e||3===e){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes)}for(;null!==(i=Z.nextNode())&&a.length<n;){if(1===i.nodeType){if(i.hasAttributes())for(const t of i.getAttributeNames())if(t.endsWith(C)){const e=c[r++],s=i.getAttribute(t).split(P),n=/([.?@])?(.*)/.exec(e);a.push({type:1,index:o,name:n[2],strings:s,ctor:"."===n[1]?it:"?"===n[1]?ot:"@"===n[1]?rt:st}),i.removeAttribute(t)}else t.startsWith(P)&&(a.push({type:6,index:o}),i.removeAttribute(t));if(z.test(i.tagName)){const t=i.textContent.split(P),e=t.length-1;if(e>0){i.textContent=w?w.emptyScript:"";for(let s=0;s<e;s++)i.append(t[s],U()),Z.nextNode(),a.push({type:2,index:++o});i.append(t[e],U())}}}else if(8===i.nodeType)if(i.data===O)a.push({type:2,index:o});else{let t=-1;for(;-1!==(t=i.data.indexOf(P,t+1));)a.push({type:7,index:o}),t+=P.length-1}o++}}static createElement(t,e){const s=M.createElement("template");return s.innerHTML=t,s}}function Q(t,e,s=t,i){if(e===F)return e;let o=void 0!==i?s._$Co?.[i]:s._$Cl;const r=T(e)?void 0:e._$litDirective$;return o?.constructor!==r&&(o?._$AO?.(!1),void 0===r?o=void 0:(o=new r(t),o._$AT(t,s,i)),void 0!==i?(s._$Co??=[])[i]=o:s._$Cl=o),void 0!==o&&(e=Q(t,o._$AS(t,e.values),o,i)),e}class tt{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:e},parts:s}=this._$AD,i=(t?.creationScope??M).importNode(e,!0);Z.currentNode=i;let o=Z.nextNode(),r=0,n=0,a=s[0];for(;void 0!==a;){if(r===a.index){let e;2===a.type?e=new et(o,o.nextSibling,this,t):1===a.type?e=new a.ctor(o,a.name,a.strings,this,t):6===a.type&&(e=new nt(o,this,t)),this._$AV.push(e),a=s[++n]}r!==a?.index&&(o=Z.nextNode(),r++)}return Z.currentNode=M,i}p(t){let e=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,e),e+=s.strings.length-2):s._$AI(t[e])),e++}}class et{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,e,s,i){this.type=2,this._$AH=J,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=s,this.options=i,this._$Cv=i?.isConnected??!0}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return void 0!==e&&11===t?.nodeType&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=Q(this,t,e),T(t)?t===J||null==t||""===t?(this._$AH!==J&&this._$AR(),this._$AH=J):t!==this._$AH&&t!==F&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):(t=>j(t)||"function"==typeof t?.[Symbol.iterator])(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==J&&T(this._$AH)?this._$AA.nextSibling.data=t:this.T(M.createTextNode(t)),this._$AH=t}$(t){const{values:e,_$litType$:s}=t,i="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=G.createElement(X(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===i)this._$AH.p(e);else{const t=new tt(i,this),s=t.u(this.options);t.p(e),this.T(s),this._$AH=t}}_$AC(t){let e=K.get(t.strings);return void 0===e&&K.set(t.strings,e=new G(t)),e}k(t){j(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let s,i=0;for(const o of t)i===e.length?e.push(s=new et(this.O(U()),this.O(U()),this,this.options)):s=e[i],s._$AI(o),i++;i<e.length&&(this._$AR(s&&s._$AB.nextSibling,i),e.length=i)}_$AR(t=this._$AA.nextSibling,e){for(this._$AP?.(!1,!0,e);t!==this._$AB;){const e=S(t).nextSibling;S(t).remove(),t=e}}setConnected(t){void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t))}}class st{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,s,i,o){this.type=1,this._$AH=J,this._$AN=void 0,this.element=t,this.name=e,this._$AM=i,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=J}_$AI(t,e=this,s,i){const o=this.strings;let r=!1;if(void 0===o)t=Q(this,t,e,0),r=!T(t)||t!==this._$AH&&t!==F,r&&(this._$AH=t);else{const i=t;let n,a;for(t=o[0],n=0;n<o.length-1;n++)a=Q(this,i[s+n],e,n),a===F&&(a=this._$AH[n]),r||=!T(a)||a!==this._$AH[n],a===J?t=J:t!==J&&(t+=(a??"")+o[n+1]),this._$AH[n]=a}r&&!i&&this.j(t)}j(t){t===J?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}}class it extends st{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===J?void 0:t}}class ot extends st{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==J)}}class rt extends st{constructor(t,e,s,i,o){super(t,e,s,i,o),this.type=5}_$AI(t,e=this){if((t=Q(this,t,e,0)??J)===F)return;const s=this._$AH,i=t===J&&s!==J||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,o=t!==J&&(s===J||i);i&&this.element.removeEventListener(this.name,this,s),o&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t)}}class nt{constructor(t,e,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=s}get _$AU(){return this._$AM._$AU}_$AI(t){Q(this,t)}}const at=E.litHtmlPolyfillSupport;at?.(G,et),(E.litHtmlVersions??=[]).push("3.3.2");const ht=globalThis;
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -31,14 +31,13 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const _t={en:{card:{title:"Modes",mode_jour:"Day mode",mode_thermostat:"Thermostat mode",entity_not_found:"Entity not found: {entity}",off:"Off"}},fr:{card:{title:"Modes",mode_jour:"Mode jour",mode_thermostat:"Mode thermostat",entity_not_found:"Entité introuvable: {entity}",off:"Éteint"}}};function ft(t,e,s){const i=function(t){const e=t?.locale?.language||t?.language||"en",s=String(e).split("-")[0];return _t[e]?e:_t[s]?s:"en"}(t);let o=(r=_t[i]||_t.en,e.split(".").reduce((t,e)=>t&&null!=t[e]?t[e]:void 0,r));var r;return o?(s&&Object.entries(s).forEach(([t,e])=>o=o.replace(`{${t}}`,e)),o):e}const $t=["Chauffage","Climatisation","Ventilation"],mt="M 30 150 A 85 85 0 1 1 170 150",gt=85*Math.PI,yt=34.2,vt=-145.8;class At extends ct{constructor(){super(...arguments),this.selectedIndex=-1}_valueToPercentage(t){return t/$t.length}_strokeDashArc(t,e){const s=this._valueToPercentage(t),i=this._valueToPercentage(e),o=Math.max((i-s)*gt,0);return[`${o} ${gt-o}`,`-${s*gt}`]}_getPercentageFromEvent(t){if(!this._svg)return-1;const e=this._svg.getBoundingClientRect(),s=2*(t.clientX-e.left-e.width/2)/e.width,i=2*(t.clientY-e.top-e.height/2)/e.height,o=180*Math.atan2(i,s)/Math.PI;return o>=vt&&o<=yt?(yt-o)/180:o>=214.2?(yt+(360-o))/180:-1}_onSvgClick(t){const e=this._getPercentageFromEvent(t);if(e<0)return;const s=Math.floor(e*$t.length),i=Math.max(0,Math.min(s,$t.length-1));this.dispatchEvent(new CustomEvent("option-selected",{detail:{option:$t[i]},bubbles:!0,composed:!0}))}render(){const t=$t.indexOf(this.currentValue);return-1!==t&&(this.selectedIndex=t),V`
+ */const _t={en:{card:{title:"Modes",mode_jour:"Day mode",mode_thermostat:"Thermostat mode",entity_not_found:"Entity not found: {entity}",off:"Off"}},fr:{card:{title:"Modes",mode_jour:"Mode jour",mode_thermostat:"Mode thermostat",entity_not_found:"Entité introuvable: {entity}",off:"Éteint"}}};function ft(t,e,s){const i=function(t){const e=t?.locale?.language||t?.language||"en",s=String(e).split("-")[0];return _t[e]?e:_t[s]?s:"en"}(t);let o=(r=_t[i]||_t.en,e.split(".").reduce((t,e)=>t&&null!=t[e]?t[e]:void 0,r));var r;return o?(s&&Object.entries(s).forEach(([t,e])=>o=o.replace(`{${t}}`,e)),o):e}const $t=["Chauffage","Climatisation","Ventilation"],mt="M 30 150 A 85 85 0 1 1 170 150",gt=34.2,yt=-145.8;class vt extends ct{constructor(){super(...arguments),this.selectedIndex=-1}_valueToPercentage(t){return t/$t.length}_strokeDashArc(t,e){const s=this._valueToPercentage(t);return[`${this._valueToPercentage(e)-s} 10`,`-${s}`]}_getPercentageFromEvent(t){if(!this._svg)return-1;const e=this._svg.getBoundingClientRect(),s=2*(t.clientX-e.left-e.width/2)/e.width,i=2*(t.clientY-e.top-e.height/2)/e.height,o=180*Math.atan2(i,s)/Math.PI;return o>=yt&&o<=gt?(gt-o)/180:o>=214.2?(gt+(360-o))/180:-1}_onSvgClick(t){const e=this._getPercentageFromEvent(t);if(e<0)return;const s=Math.floor(e*$t.length),i=Math.max(0,Math.min(s,$t.length-1));this.dispatchEvent(new CustomEvent("option-selected",{detail:{option:$t[i]},bubbles:!0,composed:!0}))}render(){const t=$t.indexOf(this.currentValue);return-1!==t&&(this.selectedIndex=t),q`
       <div class="slider-container">
         <svg viewBox="0 0 200 200" @click=${this._onSvgClick}>
           <defs>
-            <path id="arcPath" d="${mt}" />
+            <path id="arcPath" d="${mt}" pathLength="1" />
           </defs>
 
-          <!-- Arc de fond -->
           ${W`
             <path
               d="${mt}"
@@ -46,11 +45,9 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
               stroke="var(--divider-color, #e0e0e0)"
               stroke-width="${25}"
               opacity="0.3"
+              pathLength="1" 
             />
-          `}
-
-          <!-- Segment sélectionné (BLEU) -->
-          ${-1!==this.selectedIndex?(()=>{const[t,e]=this._strokeDashArc(this.selectedIndex,this.selectedIndex+1);return W`
+          `} ${-1!==this.selectedIndex?(()=>{const[t,e]=this._strokeDashArc(this.selectedIndex,this.selectedIndex+1);return W`
                   <path
                     d="${mt}"
                     fill="none"
@@ -59,10 +56,9 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
                     stroke-dasharray="${t}"
                     stroke-dashoffset="${e}"
                     stroke-linecap="butt"
+                    pathLength="1"
                   />
                 `})():null}
-
-          <!-- Zones cliquables -->
           ${$t.map((t,e)=>{const[s,i]=this._strokeDashArc(e,e+1);return W`
               <path
                 d="${mt}"
@@ -71,13 +67,12 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
                 stroke-width="${35}"
                 stroke-dasharray="${s}"
                 stroke-dashoffset="${i}"
+                pathLength="1"
                 style="cursor: pointer;"
                 @click=${t=>{t.stopPropagation(),this.dispatchEvent(new CustomEvent("option-selected",{detail:{option:$t[e]},bubbles:!0,composed:!0}))}}
               />
             `})}
-
-          <!-- Textes -->
-          ${$t.map((t,e)=>{const s=(e+.5)/$t.length*100;return W`
+          ${$t.map((t,e)=>{const s=this._valueToPercentage(e),i=this._valueToPercentage(e+1);return W`
               <text
                 font-size="12"
                 font-weight="600"
@@ -87,18 +82,14 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
                 style="cursor: pointer; user-select: none;"
                 @click=${e=>{e.stopPropagation(),this.dispatchEvent(new CustomEvent("option-selected",{detail:{option:t},bubbles:!0,composed:!0}))}}
               >
-                <textPath
-                  href="#arcPath"
-                  startOffset="${s}%"
-                  text-anchor="middle"
-                >
+                <textPath href="#arcPath" startOffset="${100*((s+i)/2)}%" text-anchor="middle">
                   ${t}
                 </textPath>
               </text>
             `})}
         </svg>
       </div>
-    `}}At.styles=n`
+    `}}vt.styles=n`
     :host {
       display: block;
     }
@@ -114,27 +105,27 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
       max-width: 280px;
       aspect-ratio: 1;
     }
-  `,t([ut({attribute:!1})],At.prototype,"hass",void 0),t([ut()],At.prototype,"entityId",void 0),t([ut()],At.prototype,"currentValue",void 0),t([ut({type:Number})],At.prototype,"selectedIndex",void 0),t([
+  `,t([ut({attribute:!1})],vt.prototype,"hass",void 0),t([ut()],vt.prototype,"entityId",void 0),t([ut()],vt.prototype,"currentValue",void 0),t([ut({type:Number})],vt.prototype,"selectedIndex",void 0),t([
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.decorate&&"object"!=typeof e&&Object.defineProperty(t,e,s),s))(e,s,{get(){return(e=>e.renderRoot?.querySelector(t)??null)(this)}})}("svg")],At.prototype,"_svg",void 0),customElements.define("day-mode-circular-slider",At);class bt extends ct{static getStubConfig(){return{name:"Modes",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat"}}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Modes",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat"}}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const s=e.target,i=s?.value;i&&this.hass.callService("input_select","select_option",{entity_id:t,option:i})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}render(){if(!this.hass||!this._config)return Z;const t=this.getEntityState(this._config.mode_jour_entity),e=this.getEntityState(this._config.mode_thermostat_entity),s=t?.attributes?.options??[],i=this._config.name??ft(this.hass,"card.title");return V`
+function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.decorate&&"object"!=typeof e&&Object.defineProperty(t,e,s),s))(e,s,{get(){return(e=>e.renderRoot?.querySelector(t)??null)(this)}})}("svg")],vt.prototype,"_svg",void 0),customElements.define("day-mode-circular-slider",vt);class At extends ct{static getStubConfig(){return{name:"Modes",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat"}}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Modes",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat"}}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const s=e.target,i=s?.value;i&&this.hass.callService("input_select","select_option",{entity_id:t,option:i})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}render(){if(!this.hass||!this._config)return J;const t=this.getEntityState(this._config.mode_jour_entity),e=this.getEntityState(this._config.mode_thermostat_entity),s=t?.attributes?.options??[],i=this._config.name??ft(this.hass,"card.title");return q`
       <ha-card header="${i}">
         <div class="grid">
           <div class="item">
             <div class="label">${ft(this.hass,"card.mode_jour")}</div>
-            ${t?V`<select
+            ${t?q`<select
                   @change=${e=>this.onSelect(t.entity_id,e)}
                 >
-                  ${s.map(e=>V`<option
+                  ${s.map(e=>q`<option
                         value="${e}"
                         ?selected=${e===t.state}
                       >
                         ${e}
                       </option>`)}
-                </select>`:V`<div class="error">
+                </select>`:q`<div class="error">
                   ${ft(this.hass,"card.entity_not_found",{entity:String(this._config.mode_jour_entity)})}
                 </div>`}
           </div>
@@ -143,7 +134,7 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
             <div class="label">
               ${ft(this.hass,"card.mode_thermostat")}
             </div>
-            ${e?V`
+            ${e?q`
                   <day-mode-circular-slider
                     .hass=${this.hass}
                     .entityId=${e.entity_id}
@@ -159,13 +150,13 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
                       <ha-icon icon="mdi:power"></ha-icon>
                     </button>
                   </div>
-                `:V`<div class="error">
+                `:q`<div class="error">
                   ${ft(this.hass,"card.entity_not_found",{entity:String(this._config.mode_thermostat_entity)})}
                 </div>`}
           </div>
         </div>
       </ha-card>
-    `}}bt.styles=n`
+    `}}At.styles=n`
     ha-card {
       padding: 12px;
     }
@@ -237,10 +228,10 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
       color: var(--text-primary-color, white);
       border-color: var(--primary-color, #3b82f6);
     }
-  `,t([ut({attribute:!1})],bt.prototype,"hass",void 0),t([function(t){return ut({...t,state:!0,attribute:!1})}
+  `,t([ut({attribute:!1})],At.prototype,"hass",void 0),t([function(t){return ut({...t,state:!0,attribute:!1})}
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */()],bt.prototype,"_config",void 0),customElements.get("day-mode-card")||customElements.define("day-mode-card",bt),window.customCards=window.customCards||[],window.customCards.push({type:"day-mode-card",name:"Day Mode Card",description:"Regroupe deux input_select (jour & thermostat)."});
+ */()],At.prototype,"_config",void 0),customElements.get("day-mode-card")||customElements.define("day-mode-card",At),window.customCards=window.customCards||[],window.customCards.push({type:"day-mode-card",name:"Day Mode Card",description:"Regroupe deux input_select (jour & thermostat)."});
 //# sourceMappingURL=day-mode-card.js.map
