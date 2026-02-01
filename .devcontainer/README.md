@@ -70,11 +70,27 @@ Une fois l'intégration ajoutée:
 ### Dépannage
 
 Si l'intégration "Scheduler" n'apparaît pas dans la liste:
+
+**⚠️ Pour les utilisateurs ayant une installation précédente:**
+Si vous avez utilisé une version antérieure du DevContainer, les fichiers peuvent avoir été installés incorrectement. Solution:
+1. Fermer VS Code et arrêter le DevContainer
+2. Supprimer le volume Docker associé au conteneur
+3. Rouvrir dans le DevContainer (reconstruction complète)
+4. Les fichiers seront installés correctement dans `/config/custom_components/scheduler/`
+
+**Autres vérifications:**
 - Vérifier que Home Assistant est complètement démarré (voir les logs)
+- Vérifier que les fichiers sont dans `/config/custom_components/scheduler/` avec:
+  ```bash
+  ls -la /config/custom_components/scheduler/
+  # Doit afficher: manifest.json, __init__.py, etc.
+  ```
+- Redémarrer Home Assistant: **Paramètres** → **Système** → **Redémarrer**
 - Rafraîchir le navigateur (Ctrl+F5)
 - Vider le cache du navigateur et recharger
-- Redémarrer Home Assistant: **Paramètres** → **Système** → **Redémarrer**
-- Vérifier que les fichiers sont dans `/config/custom_components/scheduler/`
+
+**Si les fichiers sont au mauvais endroit:**
+Si vous voyez des fichiers Python directement dans `/config/custom_components/` (au lieu de `/config/custom_components/scheduler/`), c'est une installation incorrecte. Le script de setup les nettoiera automatiquement lors du prochain redémarrage du conteneur.
 
 ## Debug
 

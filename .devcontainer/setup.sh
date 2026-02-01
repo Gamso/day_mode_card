@@ -56,6 +56,12 @@ echo "📦 Installing scheduler-component..."
 SCHEDULER_COMPONENT_VERSION="v3.3.8"
 SCHEDULER_COMPONENT_URL="https://github.com/nielsfaber/scheduler-component/releases/download/${SCHEDULER_COMPONENT_VERSION}/scheduler.zip"
 
+# Clean up any incorrectly installed files from previous attempts
+if [ -f /config/custom_components/manifest.json ] && [ ! -d /config/custom_components/scheduler ]; then
+    echo "   🧹 Cleaning up incorrectly installed files from previous attempt..."
+    rm -f /config/custom_components/*.py /config/custom_components/*.yaml /config/custom_components/manifest.json
+fi
+
 if [ ! -d /config/custom_components/scheduler ]; then
     # Install wget and unzip if not available
     if ! command -v wget &> /dev/null || ! command -v unzip &> /dev/null; then
@@ -66,17 +72,26 @@ if [ ! -d /config/custom_components/scheduler ]; then
     echo "   Downloading scheduler-component ${SCHEDULER_COMPONENT_VERSION}..."
     if wget -q ${SCHEDULER_COMPONENT_URL} -O /tmp/scheduler.zip; then
         echo "   Extracting scheduler component..."
-        unzip -q /tmp/scheduler.zip -d /config/custom_components/
+        # Create the scheduler directory first
+        mkdir -p /config/custom_components/scheduler
+        # Extract directly into the scheduler directory (zip has files at root level)
+        unzip -q /tmp/scheduler.zip -d /config/custom_components/scheduler/
         rm /tmp/scheduler.zip
         
         # Verify installation
         if [ -f /config/custom_components/scheduler/manifest.json ]; then
             echo "   ✅ Scheduler component installed successfully!"
             echo "   📁 Location: /config/custom_components/scheduler/"
+            echo "   📄 Files installed:"
+            ls -1 /config/custom_components/scheduler/ | head -5
         else
             echo "   ⚠️  Warning: scheduler component extracted but manifest.json not found"
             echo "   Checking what was extracted..."
             ls -la /config/custom_components/ || true
+            if [ -d /config/custom_components/scheduler ]; then
+                echo "   Contents of scheduler directory:"
+                ls -la /config/custom_components/scheduler/ || true
+            fi
         fi
     else
         echo "   ⚠️  Failed to download scheduler component"
@@ -87,8 +102,10 @@ else
     # Verify it's properly installed
     if [ -f /config/custom_components/scheduler/manifest.json ]; then
         echo "   ✓ manifest.json found"
+        echo "   ✓ Component should be available in Home Assistant"
     else
         echo "   ⚠️  Warning: manifest.json not found in scheduler directory"
+        echo "   This will prevent the integration from appearing in HA"
     fi
 fi
 
