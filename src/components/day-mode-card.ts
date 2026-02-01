@@ -185,10 +185,22 @@ class DayModeCard extends LitElement {
 
     .menu-toggle {
       color: var(--secondary-text-color);
+      /* On définit une taille fixe pour le bouton */
       --mdc-icon-button-size: 40px;
-      display: flex;
+
+      /* Force le centrage de l'icône à l'intérieur du bouton */
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+
+      /* Ajustement pour l'alignement dans le header absolu */
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Optionnel : Si l'icône semble encore décalée d'un pixel */
+    .menu-toggle ha-icon {
+      display: flex;
     }
 
     .container {
