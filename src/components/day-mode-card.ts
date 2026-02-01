@@ -15,7 +15,7 @@ class DayModeCard extends LitElement {
 
   public static getStubConfig(): DayModeCardConfig {
     return {
-      name: "Modes",
+      name: "Thermostat",
       mode_jour_entity: "input_select.mode_jour",
       mode_thermostat_entity: "input_select.mode_thermostat",
     };
@@ -26,7 +26,7 @@ class DayModeCard extends LitElement {
       throw new Error("Configuration manquante");
     }
     this._config = {
-      name: config.name ?? "Modes",
+      name: config.name ?? "Thermostat",
       mode_jour_entity: config.mode_jour_entity ?? "input_select.mode_jour",
       mode_thermostat_entity:
         config.mode_thermostat_entity ?? "input_select.mode_thermostat",
@@ -90,7 +90,9 @@ class DayModeCard extends LitElement {
 
                   <div class="thermo-bottom">
                     <button
-                      class="off-button ${thermo.state === "off"
+                      class="off-button ${["Eteint", "off"].includes(
+                        thermo.state,
+                      )
                         ? "active"
                         : ""}"
                       @click=${() => this.onOffButtonClick(thermo.entity_id)}
@@ -130,6 +132,7 @@ class DayModeCard extends LitElement {
   static styles = css`
     ha-card {
       padding: 12px;
+      text-align: center;
     }
 
     .container {
@@ -159,7 +162,7 @@ class DayModeCard extends LitElement {
       /* Ajustez 'bottom' selon la courbure de votre arc. 
          Si l'arc est un pont (n), 20px est souvent bien. 
          Si l'arc est un bol (u), il faudra peut-être mettre 'top: 40%' */
-      bottom: 25px;
+      bottom: 60px;
       left: 50%;
       transform: translateX(-50%); /* Centre horizontalement parfaitement */
 

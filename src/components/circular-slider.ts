@@ -104,9 +104,15 @@ export class DayModeCircularSlider extends LitElement {
 
   protected render() {
     // Synchroniser selectedIndex avec currentValue
-    const currentIndex = THERMOSTAT_MODES.indexOf(this.currentValue);
+    // Si currentValue est "Eteint" ou "off", on désélectionne tout (selectedIndex = -1)
+    let currentIndex = -1;
+    if (this.currentValue && !["Eteint", "off"].includes(this.currentValue)) {
+      currentIndex = THERMOSTAT_MODES.indexOf(this.currentValue);
+    }
     if (currentIndex !== -1) {
       this.selectedIndex = currentIndex;
+    } else {
+      this.selectedIndex = -1;
     }
 
     return html`
