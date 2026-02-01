@@ -229,7 +229,7 @@ class DayModeCard extends LitElement {
 
     .thermo-bottom {
       position: absolute;
-      bottom: 60px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
