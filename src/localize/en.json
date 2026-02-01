@@ -1,6 +1,6 @@
 {
   "card": {
-    "title": "Modes",
+    "title": "Thermostat",
     "entity_not_found": "Entity not found: {entity}",
     "off": "Off"
   }
