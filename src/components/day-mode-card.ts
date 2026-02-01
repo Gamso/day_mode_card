@@ -68,40 +68,13 @@ class DayModeCard extends LitElement {
     const thermo = this.getEntityState(this._config.mode_thermostat_entity);
 
     const jourOptions: string[] = jour?.attributes?.options ?? [];
-    const thermoOptions: string[] = thermo?.attributes?.options ?? [];
 
     const title = this._config.name ?? localize(this.hass, "card.title");
 
     return html`
       <ha-card header="${title}">
-        <div class="grid">
-          <div class="item">
-            <div class="label">${localize(this.hass, "card.mode_jour")}</div>
-            ${jour
-              ? html`<select
-                  @change=${(e: Event) => this.onSelect(jour.entity_id, e)}
-                >
-                  ${jourOptions.map(
-                    (opt) =>
-                      html`<option
-                        value="${opt}"
-                        ?selected=${opt === jour.state}
-                      >
-                        ${opt}
-                      </option>`,
-                  )}
-                </select>`
-              : html`<div class="error">
-                  ${localize(this.hass, "card.entity_not_found", {
-                    entity: String(this._config.mode_jour_entity),
-                  })}
-                </div>`}
-          </div>
-
-          <div class="item thermo-item">
-            <div class="label">
-              ${localize(this.hass, "card.mode_thermostat")}
-            </div>
+        <div class="container">
+          <div class="thermo-section">
             ${thermo
               ? html`
                   <day-mode-circular-slider
@@ -114,7 +87,7 @@ class DayModeCard extends LitElement {
                         e.detail.option,
                       )}
                   ></day-mode-circular-slider>
-                  <div class="thermo-controls">
+                  <div class="thermo-bottom">
                     <button
                       class="off-button ${thermo.state === "off"
                         ? "active"
@@ -124,6 +97,22 @@ class DayModeCard extends LitElement {
                     >
                       <ha-icon icon="mdi:power"></ha-icon>
                     </button>
+                    <div class="jour-section">
+                      <select
+                        @change=${(e: Event) =>
+                          this.onSelect(jour.entity_id, e)}
+                      >
+                        ${jourOptions.map(
+                          (opt) =>
+                            html`<option
+                              value="${opt}"
+                              ?selected=${opt === jour.state}
+                            >
+                              ${opt}
+                            </option>`,
+                        )}
+                      </select>
+                    </div>
                   </div>
                 `
               : html`<div class="error">
@@ -141,39 +130,58 @@ class DayModeCard extends LitElement {
     ha-card {
       padding: 12px;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      align-items: start;
+
+    .container {
+      display: flex;
+      justify-content: center;
     }
-    .item {
+
+    .thermo-section {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      gap: 0;
     }
+
     .label {
       font-weight: 600;
+      margin-bottom: 12px;
     }
+
     select {
       padding: 8px;
       border-radius: 6px;
       border: 1px solid var(--divider-color, #ccc);
       background: var(--card-background-color);
       color: var(--primary-text-color);
+      min-width: 100px;
     }
+
     .error {
       color: var(--error-color);
     }
 
-    .thermo-item {
+    .thermo-bottom {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      width: 100%;
+    }
+
+    .jour-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       align-items: center;
     }
 
-    .thermo-controls {
-      display: flex;
-      justify-content: center;
-      margin-top: 12px;
+    .jour-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      opacity: 0.7;
     }
 
     .off-button {
