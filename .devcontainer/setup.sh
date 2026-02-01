@@ -15,6 +15,14 @@ if [ ! -f /config/configuration.yaml ] || [ /workspaces/day_mode_card/.devcontai
     echo "   ✅ Configuration file updated!"
 fi
 
+# Copy scheduler storage file
+if [ -f /workspaces/day_mode_card/.devcontainer/scheduler.storage ]; then
+    echo "📋 Copying scheduler storage file..."
+    mkdir -p /config/.storage
+    cp /workspaces/day_mode_card/.devcontainer/scheduler.storage /config/.storage/scheduler.storage
+    echo "   ✅ scheduler.storage file copied!"
+fi
+
 # Install scheduler component
 echo "📦 Installing scheduler component..."
 if [ ! -d /config/custom_components/scheduler ]; then
