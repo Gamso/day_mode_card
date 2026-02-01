@@ -5,5 +5,6 @@ import './components/day-mode-card';
 (window as any).customCards.push({
   type: 'day-mode-card',
   name: 'Day Mode Card',
-  description: 'Regroupe deux input_select (jour & thermostat).'
+  description: 'Regroupe deux input_select (jour & thermostat).',
+  preview: true,
 });

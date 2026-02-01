@@ -34,6 +34,10 @@ class DayModeCard extends LitElement {
     };
   }
 
+  public getCardSize(): number {
+    return 4;
+  }
+
   private getEntityState(entityId?: string) {
     if (!entityId) return undefined;
     return this.hass?.states?.[entityId];

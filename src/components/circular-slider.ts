@@ -14,9 +14,6 @@ const CLICK_AREA_PADDING = 10;
 // Arc 180° (ouverture en bas)
 const ARC_PATH = "M 30 150 A 85 85 0 1 1 170 150";
 
-// Longueur réelle de l’arc
-const ARC_LENGTH = Math.PI * ARC_RADIUS;
-
 // Angles pour le calcul clic
 const START_ANGLE = 34.2;
 const TOTAL_ARC_DEGREES = 180;
