@@ -67,12 +67,21 @@ class DayModeCard extends LitElement {
     });
   }
 
-  private _renderScheduler(dayMode: string, thermoMode: string) {
+  private _renderScheduler(
+    dayMode: string,
+    thermoMode: string,
+    thermoOptions: string[],
+  ) {
+    // Exclude all thermoMode that are NOT the selected one
+    const excludedThermoModes = thermoOptions.filter(
+      (mode) => mode !== thermoMode,
+    );
+
     const schedulerConfig = {
       type: "custom:scheduler-card",
       title: false,
-      tags: [dayMode, thermoMode], // Filter by selected day mode and thermostat mode
-      include: [], // Disable adding new schedules
+      tags: dayMode,
+      exclude_tags: excludedThermoModes,
       display_options: {
         primary_info: ["<i><b><font color=orange>{name}</style></b></i>"],
         secondary_info: [
@@ -160,7 +169,11 @@ class DayModeCard extends LitElement {
 
         <div class="container">
           ${this._showScheduler
-            ? this._renderScheduler(jour.state, thermo.state)
+            ? this._renderScheduler(
+                jour.state,
+                thermo.state,
+                thermo.attributes?.options ?? [],
+              )
             : this._renderMain(thermo, jour, jour.attributes?.options ?? [])}
         </div>
       </ha-card>

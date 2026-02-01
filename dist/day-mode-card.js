@@ -116,9 +116,9 @@ const dt={attribute:!0,type:String,converter:y,reflect:!1,hasChanged:v},pt=(t=dt
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.decorate&&"object"!=typeof e&&Object.defineProperty(t,e,i),i))(e,i,{get(){return(e=>e.renderRoot?.querySelector(t)??null)(this)}})}("svg")],bt.prototype,"_svg",void 0),customElements.define("day-mode-circular-slider",bt);class At extends ht{constructor(){super(...arguments),this._showScheduler=!1}static getStubConfig(){return{name:"Thermostat",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat"}}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Thermostat",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat"}}getCardSize(){return 4}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const i=e.target,s=i?.value;s&&this.hass.callService("input_select","select_option",{entity_id:t,option:s})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}_renderScheduler(t,e){const i={type:"custom:scheduler-card",title:!1,tags:[t,e],include:[],display_options:{primary_info:["<i><b><font color=orange>{name}</style></b></i>"],secondary_info:["<i><b>Prochain lancement</b></i>{relative-time}","<i><b>Planification</b></i> {days}","additional-tasks"],icon:"entity"},sort_by:["title"],discover_existing:!1,show_header_toggle:!1,time_step:5};return q`
+function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.decorate&&"object"!=typeof e&&Object.defineProperty(t,e,i),i))(e,i,{get(){return(e=>e.renderRoot?.querySelector(t)??null)(this)}})}("svg")],bt.prototype,"_svg",void 0),customElements.define("day-mode-circular-slider",bt);class At extends ht{constructor(){super(...arguments),this._showScheduler=!1}static getStubConfig(){return{name:"Thermostat",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat"}}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Thermostat",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat"}}getCardSize(){return 4}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const i=e.target,s=i?.value;s&&this.hass.callService("input_select","select_option",{entity_id:t,option:s})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}_renderScheduler(t,e,i){const s={type:"custom:scheduler-card",title:!1,tags:t,exclude_tags:i.filter(t=>t!==e),display_options:{primary_info:["<i><b><font color=orange>{name}</style></b></i>"],secondary_info:["<i><b>Prochain lancement</b></i>{relative-time}","<i><b>Planification</b></i> {days}","additional-tasks"],icon:"entity"},sort_by:["title"],discover_existing:!1,show_header_toggle:!1,time_step:5};return q`
       <div class="scheduler-view">
-        <hui-card .hass=${this.hass} .config=${i}></hui-card>
+        <hui-card .hass=${this.hass} .config=${s}></hui-card>
       </div>
     `}_renderMain(t,e,i){return q`
       <div class="thermo-section">
@@ -160,7 +160,7 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
         </div>
 
         <div class="container">
-          ${this._showScheduler?this._renderScheduler(t.state,e.state):this._renderMain(e,t,t.attributes?.options??[])}
+          ${this._showScheduler?this._renderScheduler(t.state,e.state,e.attributes?.options??[]):this._renderMain(e,t,t.attributes?.options??[])}
         </div>
       </ha-card>
     `:q`<div class="error">Entités introuvables</div>`}}At.styles=n`

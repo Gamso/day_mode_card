@@ -125,6 +125,9 @@ echo "📦 Installing scheduler-card..."
 SCHEDULER_CARD_VERSION="v4.0.11"
 SCHEDULER_CARD_URL="https://github.com/nielsfaber/scheduler-card/releases/download/${SCHEDULER_CARD_VERSION}/scheduler-card.js"
 
+# Create scheduler-card directory
+mkdir -p /config/www/scheduler-card
+
 if [ ! -f /config/www/scheduler-card/scheduler-card.js ]; then
     # Install wget if not available
     if ! command -v wget &> /dev/null; then
