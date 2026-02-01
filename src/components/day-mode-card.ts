@@ -87,6 +87,7 @@ class DayModeCard extends LitElement {
                         e.detail.option,
                       )}
                   ></day-mode-circular-slider>
+
                   <div class="thermo-bottom">
                     <button
                       class="off-button ${thermo.state === "off"
@@ -137,10 +138,36 @@ class DayModeCard extends LitElement {
     }
 
     .thermo-section {
+      /* IMPORTANT : Position relative pour servir de repère au children absolute */
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0;
+      width: 100%;
+      max-width: 280px; /* Limite la largeur pour que le absolute ne se perde pas */
+    }
+
+    /* Le composant slider prend sa place normalement */
+    day-mode-circular-slider {
+      width: 100%;
+    }
+
+    /* IMPORTANT : On sort le bas du flux pour le mettre par dessus le slider */
+    .thermo-bottom {
+      position: absolute;
+      /* Ajustez 'bottom' selon la courbure de votre arc. 
+         Si l'arc est un pont (n), 20px est souvent bien. 
+         Si l'arc est un bol (u), il faudra peut-être mettre 'top: 40%' */
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%); /* Centre horizontalement parfaitement */
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      z-index: 2; /* S'assure qu'il est cliquable au dessus du SVG */
     }
 
     .label {
@@ -159,15 +186,6 @@ class DayModeCard extends LitElement {
 
     .error {
       color: var(--error-color);
-    }
-
-    .thermo-bottom {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-top: 16px;
-      width: 100%;
     }
 
     .jour-section {
@@ -200,6 +218,8 @@ class DayModeCard extends LitElement {
       padding: 0;
       margin: 0;
       border: 1px solid var(--divider-color, #ccc);
+      /* Ombre légère pour détacher le bouton visuellement */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .off-button:hover:not(:disabled) {
