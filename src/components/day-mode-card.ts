@@ -168,13 +168,13 @@ class DayModeCard extends LitElement {
       padding: 16px;
       position: relative;
       min-height: 320px;
+      text-align: center;
     }
 
     .card-header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+      position: absolute;
+      top: 8px;
+      right: 8px;
     }
 
     .card-title {
@@ -186,6 +186,9 @@ class DayModeCard extends LitElement {
     .menu-toggle {
       color: var(--secondary-text-color);
       --mdc-icon-button-size: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .container {

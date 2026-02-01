@@ -171,13 +171,13 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
       padding: 16px;
       position: relative;
       min-height: 320px;
+      text-align: center;
     }
 
     .card-header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+      position: absolute;
+      top: 8px;
+      right: 8px;
     }
 
     .card-title {
@@ -189,6 +189,9 @@ function(t){return(e,s,i)=>((t,e,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.
     .menu-toggle {
       color: var(--secondary-text-color);
       --mdc-icon-button-size: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .container {
