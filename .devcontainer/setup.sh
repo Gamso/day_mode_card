@@ -5,6 +5,8 @@ echo ""
 
 # Create config directories if they don't exist
 mkdir -p /config/www/day_mode_card
+mkdir -p /config/www/scheduler-card
+mkdir -p /config/custom_components
 mkdir -p /config/.storage
 
 # Check if the dist folder has the card file
@@ -14,7 +16,7 @@ if [ -f /workspaces/day_mode_card/dist/day-mode-card.js ]; then
     echo "   Card copied successfully!"
     
     # Pre-configure the Lovelace resource
-    echo "✅ Pre-configuring Lovelace resource..."
+    echo "✅ Pre-configuring Lovelace resources..."
     cat > /config/.storage/lovelace_resources << 'EOF'
 {
   "version": 1,
@@ -26,12 +28,17 @@ if [ -f /workspaces/day_mode_card/dist/day-mode-card.js ]; then
         "id": "day_mode_card",
         "url": "/local/day_mode_card/day-mode-card.js",
         "type": "module"
+      },
+      {
+        "id": "scheduler_card",
+        "url": "/local/scheduler-card/scheduler-card.js",
+        "type": "module"
       }
     ]
   }
 }
 EOF
-    echo "   Lovelace resource pre-configured!"
+    echo "   Lovelace resources pre-configured!"
 else
     echo "⚠️  WARNING: Card file not found in dist/ folder"
     echo ""
@@ -42,6 +49,50 @@ else
     echo "   3. npm run build"
     echo ""
     echo "   The dist/ folder will be automatically mounted in Home Assistant."
+fi
+
+echo ""
+echo "📦 Installing scheduler-component..."
+SCHEDULER_COMPONENT_VERSION="v3.3.8"
+SCHEDULER_COMPONENT_URL="https://github.com/nielsfaber/scheduler-component/releases/download/${SCHEDULER_COMPONENT_VERSION}/scheduler.zip"
+
+if ! command -v wget &> /dev/null; then
+    echo "   Installing wget..."
+    apk add --no-cache wget unzip > /dev/null 2>&1
+fi
+
+if [ ! -d /config/custom_components/scheduler ]; then
+    echo "   Downloading scheduler-component ${SCHEDULER_COMPONENT_VERSION}..."
+    wget -q ${SCHEDULER_COMPONENT_URL} -O /tmp/scheduler.zip
+    
+    if [ $? -eq 0 ]; then
+        echo "   Extracting scheduler component..."
+        unzip -q /tmp/scheduler.zip -d /config/custom_components/
+        rm /tmp/scheduler.zip
+        echo "   ✅ Scheduler component installed!"
+    else
+        echo "   ⚠️  Failed to download scheduler component"
+    fi
+else
+    echo "   ✅ Scheduler component already installed"
+fi
+
+echo ""
+echo "📦 Installing scheduler-card..."
+SCHEDULER_CARD_VERSION="v4.0.11"
+SCHEDULER_CARD_URL="https://github.com/nielsfaber/scheduler-card/releases/download/${SCHEDULER_CARD_VERSION}/scheduler-card.js"
+
+if [ ! -f /config/www/scheduler-card/scheduler-card.js ]; then
+    echo "   Downloading scheduler-card ${SCHEDULER_CARD_VERSION}..."
+    wget -q ${SCHEDULER_CARD_URL} -O /config/www/scheduler-card/scheduler-card.js
+    
+    if [ $? -eq 0 ]; then
+        echo "   ✅ Scheduler card installed!"
+    else
+        echo "   ⚠️  Failed to download scheduler card"
+    fi
+else
+    echo "   ✅ Scheduler card already installed"
 fi
 
 echo ""

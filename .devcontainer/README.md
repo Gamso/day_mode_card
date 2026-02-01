@@ -34,6 +34,26 @@ Des entités `input_select` sont incluses pour valider la carte:
 - `input_select.mode_jour`: Maison, Travail, Télétravail, Absence
 - `input_select.mode_thermostat`: Eteint, Chauffage, Climatisation, Ventilation
 
+Des entités `input_boolean` sont incluses pour tester le scheduler:
+
+- `input_boolean.test_switch`: Interrupteur de test
+- `input_boolean.test_light`: Lumière de test
+
+## Scheduler Integration
+
+L'environnement de test inclut automatiquement:
+
+- **scheduler-component** (v3.3.8): Composant permettant de créer des planifications
+- **scheduler-card** (v4.0.11): Interface UI pour gérer les planifications
+
+Ces composants sont automatiquement téléchargés et installés lors de la première initialisation du conteneur.
+
+### Utilisation du Scheduler
+
+1. Accéder à l'onglet "Scheduler" dans le dashboard
+2. Utiliser la carte scheduler-card pour créer des planifications
+3. Sélectionner les entités `input_boolean.test_switch` ou `input_boolean.test_light` pour tester
+
 ## Debug
 
 - Logs HA: `/config/home-assistant.log`

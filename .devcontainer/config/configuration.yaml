@@ -35,3 +35,20 @@ input_select:
       - Chauffage
       - Climatisation
       - Ventilation
+
+# Scheduler integration
+scheduler:
+  customize:
+    light:
+      icon: mdi:lightbulb
+    switch:
+      icon: mdi:power-plug
+
+# Test entities for scheduler
+input_boolean:
+  test_switch:
+    name: Test Switch
+    icon: mdi:power-plug
+  test_light:
+    name: Test Light
+    icon: mdi:lightbulb
