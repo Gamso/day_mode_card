@@ -72,6 +72,7 @@ class DayModeCard extends LitElement {
       type: "custom:scheduler-card",
       title: false,
       tags: [dayMode, thermoMode], // Filter by selected day mode and thermostat mode
+      include: [], // Disable adding new schedules
       display_options: {
         primary_info: ["<i><b><font color=orange>{name}</style></b></i>"],
         secondary_info: [
@@ -241,6 +242,7 @@ class DayModeCard extends LitElement {
     .scheduler-view {
       width: 100%;
       animation: fadeIn 0.3s ease-out;
+      text-align: left;
     }
 
     .scheduler-header {
