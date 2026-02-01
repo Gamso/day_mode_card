@@ -34,6 +34,19 @@ export class DayModeCircularSlider extends LitElement {
      UTILS
   ======================= */
 
+  private _getColorForMode(mode: string): string {
+    switch (mode) {
+      case "Chauffage":
+        return "#e74c3c"; // Red for heating
+      case "Climatisation":
+        return "var(--primary-color, #3b82f6)"; // Blue for cooling
+      case "Ventilation":
+        return "#d4a574"; // Beige for ventilation
+      default:
+        return "var(--primary-color, #3b82f6)";
+    }
+  }
+
   private _valueToPercentage(index: number): number {
     // Divide by total length to get equal segments (1/3 each)
     // Keep left-to-right mapping (0 -> 1)
@@ -134,11 +147,14 @@ export class DayModeCircularSlider extends LitElement {
                   this.selectedIndex + 1,
                 );
 
+                const selectedMode = THERMOSTAT_MODES[this.selectedIndex];
+                const strokeColor = this._getColorForMode(selectedMode);
+
                 return svg`
                   <path
                     d="${ARC_PATH}"
                     fill="none"
-                    stroke="var(--primary-color, #3b82f6)"
+                    stroke="${strokeColor}"
                     stroke-width="${STROKE_WIDTH}"
                     stroke-dasharray="${dasharray}"
                     stroke-dashoffset="${dashoffset}"
@@ -219,12 +235,12 @@ export class DayModeCircularSlider extends LitElement {
     .slider-container {
       display: flex;
       justify-content: center;
-      padding: 20px 0;
+      padding: 8px 0;
     }
 
     svg {
       width: 100%;
-      max-width: 280px;
+      max-width: 240px;
       aspect-ratio: 1;
     }
   `;

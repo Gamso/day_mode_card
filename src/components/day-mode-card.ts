@@ -67,11 +67,11 @@ class DayModeCard extends LitElement {
     });
   }
 
-  private _renderScheduler(currentTag: string) {
+  private _renderScheduler(dayMode: string, thermoMode: string) {
     const schedulerConfig = {
       type: "custom:scheduler-card",
       title: false,
-      tags: currentTag, // Filter by selected day mode (Home, Work, etc.)
+      tags: [dayMode, thermoMode], // Filter by selected day mode and thermostat mode
       display_options: {
         primary_info: ["<i><b><font color=orange>{name}</style></b></i>"],
         secondary_info: [
@@ -89,9 +89,6 @@ class DayModeCard extends LitElement {
 
     return html`
       <div class="scheduler-view">
-        <div class="scheduler-header">
-          <span>Planning : <b>${currentTag}</b></span>
-        </div>
         <hui-card .hass=${this.hass} .config=${schedulerConfig}></hui-card>
       </div>
     `;
@@ -153,14 +150,16 @@ class DayModeCard extends LitElement {
             }}
           >
             <ha-icon
-              icon="${this._showScheduler ? "mdi:close" : "mdi:dots-vertical"}"
+              icon="${this._showScheduler
+                ? "mdi:arrow-left"
+                : "mdi:dots-vertical"}"
             ></ha-icon>
           </ha-icon-button>
         </div>
 
         <div class="container">
           ${this._showScheduler
-            ? this._renderScheduler(jour.state)
+            ? this._renderScheduler(jour.state, thermo.state)
             : this._renderMain(thermo, jour, jour.attributes?.options ?? [])}
         </div>
       </ha-card>
@@ -169,9 +168,9 @@ class DayModeCard extends LitElement {
 
   static styles = css`
     ha-card {
-      padding: 16px;
+      padding: 8px;
       position: relative;
-      min-height: 320px;
+      min-height: 240px;
       text-align: center;
     }
 
@@ -217,7 +216,7 @@ class DayModeCard extends LitElement {
     .thermo-section {
       position: relative;
       width: 100%;
-      max-width: 280px;
+      max-width: 240px;
       display: flex;
       flex-direction: column;
       align-items: center;
