@@ -2,11 +2,13 @@ import { LitElement, html, css, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import { localize } from "../localize/localize";
 import "./circular-slider";
+import "./day-mode-card-editor";
 
 interface DayModeCardConfig {
   name?: string;
   mode_jour_entity?: string;
   mode_thermostat_entity?: string;
+  show_title?: boolean;
 }
 
 class DayModeCard extends LitElement {
@@ -22,7 +24,12 @@ class DayModeCard extends LitElement {
       name: "Thermostat",
       mode_jour_entity: "input_select.mode_jour",
       mode_thermostat_entity: "input_select.mode_thermostat",
+      show_title: true,
     };
+  }
+
+  public static getConfigElement() {
+    return document.createElement("day-mode-card-editor");
   }
 
   public setConfig(config: DayModeCardConfig): void {
@@ -34,6 +41,7 @@ class DayModeCard extends LitElement {
       mode_jour_entity: config.mode_jour_entity ?? "input_select.mode_jour",
       mode_thermostat_entity:
         config.mode_thermostat_entity ?? "input_select.mode_thermostat",
+      show_title: config.show_title !== false,
     };
   }
 
@@ -188,7 +196,7 @@ class DayModeCard extends LitElement {
       return html`<div class="error">Entités introuvables</div>`;
 
     return html`
-      <ha-card header="${title}">
+      <ha-card .header=${this._config.show_title ? title : undefined}>
         <div class="card-header-container">
           <ha-icon-button
             class="menu-toggle"

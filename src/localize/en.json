@@ -3,5 +3,11 @@
     "title": "Thermostat",
     "entity_not_found": "Entity not found: {entity}",
     "off": "Off"
+  },
+  "editor": {
+    "name": "Name",
+    "mode_jour_entity": "Day Mode Entity",
+    "mode_thermostat_entity": "Thermostat Mode Entity",
+    "show_title": "Show title"
   }
 }
