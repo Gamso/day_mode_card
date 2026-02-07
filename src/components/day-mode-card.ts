@@ -13,6 +13,7 @@ class DayModeCard extends LitElement {
   @property({ attribute: false }) public hass!: any;
   @state() private _config!: DayModeCardConfig;
   @state() private _showScheduler = false;
+  @state() private _schedulerTag: string | null = null;
 
   public static getStubConfig(): DayModeCardConfig {
     return {
@@ -67,21 +68,41 @@ class DayModeCard extends LitElement {
     });
   }
 
+  private onVoletButtonClick() {
+    if (this._showScheduler && this._schedulerTag === "volet") {
+      this._showScheduler = false;
+      this._schedulerTag = null;
+      return;
+    }
+
+    this._showScheduler = true;
+    this._schedulerTag = "volet";
+  }
+
   private _renderScheduler(
     dayMode: string,
     thermoMode: string,
     thermoOptions: string[],
+    tagOverride?: string | null,
   ) {
-    // Exclude all thermoMode that are NOT the selected one
-    const excludedThermoModes = thermoOptions.filter(
-      (mode) => mode !== thermoMode,
-    );
+    let tags: string | string[];
+    let excludedTags: string[];
+
+    if (tagOverride === "volet") {
+      // Volet button: show schedulers with "volet" and dayMode tags, but exclude thermoMode
+      tags = ["volet", dayMode];
+      excludedTags = [thermoMode];
+    } else {
+      // Burger menu: show schedulers with dayMode tag, exclude other thermo modes (keeps current thermoMode)
+      tags = dayMode;
+      excludedTags = thermoOptions.filter((mode) => mode !== thermoMode);
+    }
 
     const schedulerConfig = {
       type: "custom:scheduler-card",
       title: false,
-      tags: dayMode,
-      exclude_tags: excludedThermoModes,
+      tags: tags,
+      exclude_tags: excludedTags,
       display_options: {
         primary_info: ["<i><b><font color=orange>{name}</style></b></i>"],
         secondary_info: [
@@ -114,6 +135,16 @@ class DayModeCard extends LitElement {
           @option-selected=${(e: any) =>
             this.onCircularSliderSelect(thermo.entity_id, e.detail.option)}
         ></day-mode-circular-slider>
+
+        <div class="volet-center">
+          <button
+            class="volet-button"
+            @click=${() => this.onVoletButtonClick()}
+            title="Scheduler volet"
+          >
+            <ha-icon icon="mdi:window-shutter"></ha-icon>
+          </button>
+        </div>
 
         <div class="thermo-bottom">
           <button
@@ -157,6 +188,9 @@ class DayModeCard extends LitElement {
             class="menu-toggle"
             @click=${() => {
               this._showScheduler = !this._showScheduler;
+              if (!this._showScheduler) {
+                this._schedulerTag = null;
+              }
             }}
           >
             <ha-icon
@@ -173,6 +207,7 @@ class DayModeCard extends LitElement {
                 jour.state,
                 thermo.state,
                 thermo.attributes?.options ?? [],
+                this._schedulerTag,
               )
             : this._renderMain(thermo, jour, jour.attributes?.options ?? [])}
         </div>
@@ -249,6 +284,33 @@ class DayModeCard extends LitElement {
       align-items: center;
       gap: 12px;
       z-index: 2;
+    }
+
+    .volet-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+
+    .off-button,
+    .volet-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card-background-color, #ffffff);
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .off-button ha-icon,
+    .volet-button ha-icon {
+      color: var(--secondary-text-color, #666);
     }
 
     /* SCHEDULER VIEW */
