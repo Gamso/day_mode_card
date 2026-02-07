@@ -35,3 +35,27 @@ input_select:
       - Chauffage
       - Climatisation
       - Ventilation
+
+# Scheduler integration
+# NOTE: The scheduler integration must be added via the Home Assistant UI first!
+# Steps to add:
+#   1. Go to Settings → Devices & Services
+#   2. Click "+ Add Integration"
+#   3. Search for "Scheduler" and add it
+# 
+# After adding the integration, you can customize it by uncommenting and editing below:
+# scheduler:
+#   customize:
+#     light:
+#       icon: mdi:lightbulb
+#     switch:
+#       icon: mdi:power-plug
+
+# Test entities for scheduler
+input_boolean:
+  test_switch:
+    name: Test Switch
+    icon: mdi:power-plug
+  test_light:
+    name: Test Light
+    icon: mdi:lightbulb

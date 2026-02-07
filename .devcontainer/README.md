@@ -34,6 +34,64 @@ Des entités `input_select` sont incluses pour valider la carte:
 - `input_select.mode_jour`: Maison, Travail, Télétravail, Absence
 - `input_select.mode_thermostat`: Eteint, Chauffage, Climatisation, Ventilation
 
+Des entités `input_boolean` sont incluses pour tester le scheduler:
+
+- `input_boolean.test_switch`: Interrupteur de test
+- `input_boolean.test_light`: Lumière de test
+
+## Scheduler Integration
+
+L'environnement de test inclut automatiquement:
+
+- **scheduler-component** (v3.3.8): Composant permettant de créer des planifications
+- **scheduler-card** (v4.0.11): Interface UI pour gérer les planifications
+
+Ces composants sont automatiquement téléchargés et installés lors de la première initialisation du conteneur.
+
+### ⚠️ IMPORTANT: Configuration Requise
+
+**L'intégration Scheduler doit être ajoutée manuellement via l'interface Home Assistant:**
+
+1. Attendre que Home Assistant soit complètement démarré (1-2 minutes)
+2. Compléter l'onboarding (créer un compte admin/admin si nécessaire)
+3. Aller dans **Paramètres** → **Appareils et Services**
+4. Cliquer sur **+ Ajouter une intégration**
+5. Rechercher **"Scheduler"** et cliquer pour l'ajouter
+6. L'intégration sera alors configurée et fonctionnelle
+
+### Utilisation du Scheduler
+
+Une fois l'intégration ajoutée:
+
+1. Accéder à l'onglet "Scheduler" dans le dashboard
+2. Utiliser la carte scheduler-card pour créer des planifications
+3. Sélectionner les entités `input_boolean.test_switch` ou `input_boolean.test_light` pour tester
+
+### Dépannage
+
+Si l'intégration "Scheduler" n'apparaît pas dans la liste:
+
+**⚠️ Pour les utilisateurs ayant une installation précédente:**
+Si vous avez utilisé une version antérieure du DevContainer, les fichiers peuvent avoir été installés incorrectement. Solution:
+1. Fermer VS Code et arrêter le DevContainer
+2. Supprimer le volume Docker associé au conteneur
+3. Rouvrir dans le DevContainer (reconstruction complète)
+4. Les fichiers seront installés correctement dans `/config/custom_components/scheduler/`
+
+**Autres vérifications:**
+- Vérifier que Home Assistant est complètement démarré (voir les logs)
+- Vérifier que les fichiers sont dans `/config/custom_components/scheduler/` avec:
+  ```bash
+  ls -la /config/custom_components/scheduler/
+  # Doit afficher: manifest.json, __init__.py, etc.
+  ```
+- Redémarrer Home Assistant: **Paramètres** → **Système** → **Redémarrer**
+- Rafraîchir le navigateur (Ctrl+F5)
+- Vider le cache du navigateur et recharger
+
+**Si les fichiers sont au mauvais endroit:**
+Si vous voyez des fichiers Python directement dans `/config/custom_components/` (au lieu de `/config/custom_components/scheduler/`), c'est une installation incorrecte. Le script de setup les nettoiera automatiquement lors du prochain redémarrage du conteneur.
+
 ## Debug
 
 - Logs HA: `/config/home-assistant.log`
