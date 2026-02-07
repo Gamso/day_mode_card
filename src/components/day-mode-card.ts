@@ -85,15 +85,16 @@ class DayModeCard extends LitElement {
     dayMode: string,
     thermoMode: string,
     thermoOptions: string[],
+    jourOptions: string[],
     tagOverride?: string | null,
   ) {
     let tags: string | string[];
     let excludedTags: string[];
 
     if (tagOverride === DayModeCard.VOLET_TAG) {
-      // Volet button: show schedulers with "volet" and dayMode tags, but exclude thermoMode
-      tags = [DayModeCard.VOLET_TAG, dayMode];
-      excludedTags = [thermoMode];
+      // Volet button: show all schedulers with "volet" tag, exclude only thermo modes
+      tags = DayModeCard.VOLET_TAG;
+      excludedTags = thermoOptions;
     } else {
       // Burger menu: show schedulers with dayMode tag, exclude other thermo modes and "Volet"
       tags = dayMode;
@@ -212,6 +213,7 @@ class DayModeCard extends LitElement {
                 jour.state,
                 thermo.state,
                 thermo.attributes?.options ?? [],
+                jour.attributes?.options ?? [],
                 this._schedulerTag,
               )
             : this._renderMain(thermo, jour, jour.attributes?.options ?? [])}
