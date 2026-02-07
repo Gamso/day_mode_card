@@ -10,6 +10,8 @@ interface DayModeCardConfig {
 }
 
 class DayModeCard extends LitElement {
+  private static readonly VOLET_TAG = "Volet";
+
   @property({ attribute: false }) public hass!: any;
   @state() private _config!: DayModeCardConfig;
   @state() private _showScheduler = false;
@@ -69,14 +71,14 @@ class DayModeCard extends LitElement {
   }
 
   private onVoletButtonClick() {
-    if (this._showScheduler && this._schedulerTag === "volet") {
+    if (this._showScheduler && this._schedulerTag === DayModeCard.VOLET_TAG) {
       this._showScheduler = false;
       this._schedulerTag = null;
       return;
     }
 
     this._showScheduler = true;
-    this._schedulerTag = "volet";
+    this._schedulerTag = DayModeCard.VOLET_TAG;
   }
 
   private _renderScheduler(
@@ -88,9 +90,9 @@ class DayModeCard extends LitElement {
     let tags: string | string[];
     let excludedTags: string[];
 
-    if (tagOverride === "volet") {
+    if (tagOverride === DayModeCard.VOLET_TAG) {
       // Volet button: show schedulers with "volet" and dayMode tags, but exclude thermoMode
-      tags = ["volet", dayMode];
+      tags = [DayModeCard.VOLET_TAG, dayMode];
       excludedTags = [thermoMode];
     } else {
       // Burger menu: show schedulers with dayMode tag, exclude other thermo modes (keeps current thermoMode)
