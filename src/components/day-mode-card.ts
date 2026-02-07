@@ -374,9 +374,8 @@ class DayModeCard extends LitElement {
     }
 
     .off-button.active {
-      background: var(--primary-color, #3b82f6);
-      color: white;
-      border-color: var(--primary-color);
+      background: var(--divider-color, #313131);
+      color: var(--primary-text-color);
     }
 
     .error {
