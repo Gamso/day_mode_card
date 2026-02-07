@@ -295,7 +295,7 @@ class DayModeCard extends LitElement {
 
     .volet-center {
       position: absolute;
-      top: 50%;
+      top: 42%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 2;
@@ -309,7 +309,7 @@ class DayModeCard extends LitElement {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: none;
+      border: 1px solid var(--divider-color, #ccc);
       background: var(--card-background-color, #ffffff);
       cursor: pointer;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);

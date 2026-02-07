@@ -246,7 +246,7 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
 
     .volet-center {
       position: absolute;
-      top: 50%;
+      top: 42%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 2;
@@ -260,7 +260,7 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: none;
+      border: 1px solid var(--divider-color, #ccc);
       background: var(--card-background-color, #ffffff);
       cursor: pointer;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -327,7 +327,6 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
     .off-button.active {
       background: var(--divider-color, #313131);
       color: var(--primary-text-color);
-      border-color: var(--primary-color);
     }
 
     .error {
