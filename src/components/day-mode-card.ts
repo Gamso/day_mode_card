@@ -95,9 +95,12 @@ class DayModeCard extends LitElement {
       tags = [DayModeCard.VOLET_TAG, dayMode];
       excludedTags = [thermoMode];
     } else {
-      // Burger menu: show schedulers with dayMode tag, exclude other thermo modes (keeps current thermoMode)
+      // Burger menu: show schedulers with dayMode tag, exclude other thermo modes and "Volet"
       tags = dayMode;
-      excludedTags = thermoOptions.filter((mode) => mode !== thermoMode);
+      excludedTags = [
+        ...thermoOptions.filter((mode) => mode !== thermoMode),
+        DayModeCard.VOLET_TAG,
+      ];
     }
 
     const schedulerConfig = {
