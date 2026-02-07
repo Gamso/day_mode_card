@@ -165,9 +165,9 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
       align-items: center;
       padding: 8px 0;
     }
-  `,t([pt({attribute:!1})],At.prototype,"hass",void 0),t([_t()],At.prototype,"_config",void 0),customElements.get("day-mode-card-editor")||customElements.define("day-mode-card-editor",At);class Et extends ct{constructor(){super(...arguments),this._showScheduler=!1,this._schedulerTag=null}static getStubConfig(){return{name:"Thermostat",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat",show_title:!0}}static getConfigElement(){return document.createElement("day-mode-card-editor")}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Thermostat",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat",show_title:!1!==t.show_title}}getCardSize(){return 4}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const i=e.target,s=i?.value;s&&this.hass.callService("input_select","select_option",{entity_id:t,option:s})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}onVoletButtonClick(){if(this._showScheduler&&this._schedulerTag===Et.VOLET_TAG)return this._showScheduler=!1,void(this._schedulerTag=null);this._showScheduler=!0,this._schedulerTag=Et.VOLET_TAG}_renderScheduler(t,e,i,s,o){let n,r;o===Et.VOLET_TAG?(n=Et.VOLET_TAG,r=i):(n=t,r=[...i.filter(t=>t!==e),Et.VOLET_TAG]);const a={type:"custom:scheduler-card",title:!1,tags:n,exclude_tags:r,display_options:{primary_info:["<i><b><font color=orange>{name}</style></b></i>"],secondary_info:["<i><b>Prochain lancement</b></i>{relative-time}","<i><b>Planification</b></i> {days}","additional-tasks"],icon:"entity"},sort_by:["title"],discover_existing:!1,show_header_toggle:!1,time_step:5};return q`
+  `,t([pt({attribute:!1})],At.prototype,"hass",void 0),t([_t()],At.prototype,"_config",void 0),customElements.get("day-mode-card-editor")||customElements.define("day-mode-card-editor",At);class Et extends ct{constructor(){super(...arguments),this._showScheduler=!1,this._schedulerTag=null}static getStubConfig(){return{name:"Thermostat",mode_jour_entity:"input_select.mode_jour",mode_thermostat_entity:"input_select.mode_thermostat",show_title:!0}}static getConfigElement(){return document.createElement("day-mode-card-editor")}setConfig(t){if(!t)throw new Error("Configuration manquante");this._config={name:t.name??"Thermostat",mode_jour_entity:t.mode_jour_entity??"input_select.mode_jour",mode_thermostat_entity:t.mode_thermostat_entity??"input_select.mode_thermostat",show_title:!1!==t.show_title}}getCardSize(){return 4}getEntityState(t){if(t)return this.hass?.states?.[t]}onSelect(t,e){const i=e.target,s=i?.value;s&&this.hass.callService("input_select","select_option",{entity_id:t,option:s})}onCircularSliderSelect(t,e){this.hass.callService("input_select","select_option",{entity_id:t,option:e})}onOffButtonClick(t){this.hass.callService("input_select","select_option",{entity_id:t,option:"Eteint"})}onVoletButtonClick(){if(this._showScheduler&&this._schedulerTag===Et.VOLET_TAG)return this._showScheduler=!1,void(this._schedulerTag=null);this._showScheduler=!0,this._schedulerTag=Et.VOLET_TAG}_renderScheduler(t,e,i,s){let o,n;s===Et.VOLET_TAG?(o=Et.VOLET_TAG,n=i):(o=t,n=[...i.filter(t=>t!==e),Et.VOLET_TAG]);const r={type:"custom:scheduler-card",title:!1,tags:o,exclude_tags:n,display_options:{primary_info:["<i><b><font color=orange>{name}</style></b></i>"],secondary_info:["<i><b>Prochain lancement</b></i>{relative-time}","<i><b>Planification</b></i> {days}","additional-tasks"],icon:"entity"},sort_by:["title"],discover_existing:!1,show_header_toggle:!1,time_step:5};return q`
       <div class="scheduler-view">
-        <hui-card .hass=${this.hass} .config=${a}></hui-card>
+        <hui-card .hass=${this.hass} .config=${r}></hui-card>
       </div>
     `}_renderMain(t,e,i){return q`
       <div class="thermo-section">
@@ -219,7 +219,7 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
         </div>
 
         <div class="container">
-          ${this._showScheduler?this._renderScheduler(t.state,e.state,e.attributes?.options??[],t.attributes?.options??[],this._schedulerTag):this._renderMain(e,t,t.attributes?.options??[])}
+          ${this._showScheduler?this._renderScheduler(t.state,e.state,e.attributes?.options??[],this._schedulerTag):this._renderMain(e,t,t.attributes?.options??[])}
         </div>
       </ha-card>
     `:q`<div class="error">Entités introuvables</div>`}}Et.VOLET_TAG="Volet",Et.styles=r`
@@ -234,6 +234,7 @@ function(t){return(e,i,s)=>((t,e,i)=>(i.configurable=!0,i.enumerable=!0,Reflect.
       position: absolute;
       top: 8px;
       right: 8px;
+      z-index: 10;
     }
 
     .card-title {

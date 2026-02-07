@@ -93,7 +93,6 @@ class DayModeCard extends LitElement {
     dayMode: string,
     thermoMode: string,
     thermoOptions: string[],
-    jourOptions: string[],
     tagOverride?: string | null,
   ) {
     let tags: string | string[];
@@ -221,7 +220,6 @@ class DayModeCard extends LitElement {
                 jour.state,
                 thermo.state,
                 thermo.attributes?.options ?? [],
-                jour.attributes?.options ?? [],
                 this._schedulerTag,
               )
             : this._renderMain(thermo, jour, jour.attributes?.options ?? [])}
@@ -242,6 +240,7 @@ class DayModeCard extends LitElement {
       position: absolute;
       top: 8px;
       right: 8px;
+      z-index: 10;
     }
 
     .card-title {
